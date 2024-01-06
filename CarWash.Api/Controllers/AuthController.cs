@@ -5,6 +5,7 @@ using CarWash.Service.Services.Auth;
 using CarWash.Entity.Dtos.Customer;
 using CarWash.Entity.Dtos.Employee;
 using Microsoft.AspNetCore.Authorization;
+using CarWash.Entity.Enums;
 namespace CarWash.Api.Controllers
 {
 
@@ -35,10 +36,10 @@ namespace CarWash.Api.Controllers
         }
 
         [Authorize]
-        [HttpPost("logauth")]
-        public async Task<IActionResult> LogAuth()
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout()
         {
-            var response = await _authService.LogAuth(int.Parse(GetUserId()));
+            var response = await _authService.Logout(int.Parse(GetUserId()));
             return CreateActionResultInstance(response);
         }
         /// <summary>
@@ -62,8 +63,8 @@ namespace CarWash.Api.Controllers
             return CreateActionResultInstance(response);
         }
 
-        [HttpPost("Empregister")]
-        [Authorize]
+        [HttpPost("empregister")]
+        [Authorize(Roles = $"{nameof(EmployeeRoles.Manager)}")]
         public async Task<IActionResult> EmpRegister([FromBody] CreateEmployeeDto requset)
         {
             var response = await _authService.RegisterEmployee(requset);

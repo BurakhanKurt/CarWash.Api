@@ -201,7 +201,7 @@ namespace CarWash.Service.Services.Auth
             }
         }
 
-        public async Task<Response<NoContent>> LogAuth(int userId)
+        public async Task<Response<NoContent>> Logout(int userId)
         {
             try
             {
@@ -211,7 +211,7 @@ namespace CarWash.Service.Services.Auth
             }
             catch (Exception ex)
             {
-                _logger.SendError(ex, nameof(LogAuth));
+                _logger.SendError(ex, nameof(Logout));
                 return Response<NoContent>.Fail("Bilinmedik bir hata oluştu.", 500);
             }
         }

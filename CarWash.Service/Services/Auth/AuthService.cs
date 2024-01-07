@@ -194,6 +194,8 @@ namespace CarWash.Service.Services.Auth
                     var token = await _jwtGenerator.GenerateJwt(user,UserTypes.Employee, TokenTypes.AccessToken);
                     var refreshToken = await _jwtGenerator.GenerateRefreshToken(user, UserTypes.Employee);
 
+                    
+                    
                     return Response<LoginResDto>.Success(new LoginResDto { Token = token, RefreshToken = refreshToken }, 200);
                 }
 

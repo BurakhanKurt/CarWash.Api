@@ -143,24 +143,6 @@ namespace CarWash.Service.Services.Auth
                     var token = await _jwtGenerator.GenerateJwt(user, TokenTypes.AccessToken);
                     var refreshToken = await _jwtGenerator.GenerateRefreshToken(user);
 
-                    var updatedToken = await _tokenRepository.FindByCondition(t => t.UserId == user.Id && t.TokenType == TokenTypes.AccessToken && t.WhosToken == WhosToken.Employee, true).FirstOrDefaultAsync();
-
-                    if (updatedToken != null)
-                    {
-                        updatedToken.Token = token;
-                        _tokenRepository.Update(updatedToken);
-                    }
-                    else
-                        await _tokenRepository.CreateAsync(new UserToken()
-                        {
-                            Token = token,
-                            TokenType = TokenTypes.AccessToken,
-                            UserId = user.Id,
-                            WhosToken = WhosToken.Customer,
-                        });
-
-                    await _tokenRepository.SaveChangesAsync();
-
                     return Response<LoginResDto>.Success(new LoginResDto { Token = token, RefreshToken = refreshToken }, 200);
                 }
 
@@ -189,6 +171,8 @@ namespace CarWash.Service.Services.Auth
                     var token = await _jwtGenerator.GenerateJwt(user, TokenTypes.AccessToken);
                     var refreshToken = await _jwtGenerator.GenerateRefreshToken(user);
 
+                    
+                    
                     return Response<LoginResDto>.Success(new LoginResDto { Token = token, RefreshToken = refreshToken }, 200);
                 }
 

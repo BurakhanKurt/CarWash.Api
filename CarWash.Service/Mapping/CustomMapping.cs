@@ -14,7 +14,7 @@ namespace CarWash.Service.Mapping
             .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => $"{src.FirstName} {src.LastName}"))
             .ForMember(dest => dest.RoleId, opt => opt.MapFrom(src => src.RoleId));
 
-            CreateMap<CreateCustomerDto, Employee>()
+            CreateMap<CreateCustomerDto, Customer>()
             .ForMember(dest => dest.NormalizedEmail, opt => opt.MapFrom(src => src.Email.ToUpper()))
             .ForMember(dest => dest.NormalizedUserName, opt => opt.MapFrom(src => src.UserName.ToUpper()))
             .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => $"{src.FirstName} {src.LastName}"));

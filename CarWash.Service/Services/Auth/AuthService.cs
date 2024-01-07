@@ -72,17 +72,22 @@ namespace CarWash.Service.Services.Auth
                 var newUser = ObjectMapper.Mapper.Map<User>(createEmployeeDto);
                 newUser.Password = hashedPassword;
 
+
                 var newEmpAttendance = ObjectMapper.Mapper.Map<EmployeeAttendance>(createEmployeeDto.Attandace);
 
                 var newEmployee = new Employee
                 {
-                    UserId = newUser.Id,
+                    //UserId = newUser.Id,
                     RoleId = createEmployeeDto.RoleId,
                     EmployeeAttendance = newEmpAttendance
                 };
 
+                newUser.Employee = newEmployee;
+
+
                 // Kullanıcıyı veritabanına ekleyin
                 await _userRepository.CreateAsync(newUser);
+                //await _employeeRepository.CreateAsync(newEmployee);
                 await _unitOfWork.SaveChangesAsync();
 
                 return Response<User>.Success(newUser, 200);

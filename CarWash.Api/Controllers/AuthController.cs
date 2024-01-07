@@ -64,7 +64,7 @@ namespace CarWash.Api.Controllers
         }
 
         [HttpPost("empregister")]
-        [Authorize(Roles = $"{nameof(EmployeeRoles.Manager)}")]
+        //[Authorize(Roles = $"{nameof(EmployeeRoles.Manager)}")]
         public async Task<IActionResult> EmpRegister([FromBody] CreateEmployeeDto requset)
         {
             var response = await _authService.RegisterEmployee(requset);

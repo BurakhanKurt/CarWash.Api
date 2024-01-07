@@ -4,6 +4,7 @@ namespace CarWash.Entity.Entities
 {
     public class Appointment : EntityBase
     {
+        public int Id { get; set; }
         public int CustomerId { get; set; }
         public int PackageId { get; set; }
         public DateTime AppointmentDate { get; set; }

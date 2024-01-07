@@ -2,6 +2,7 @@
 using CarWash.Entity.Entities;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
+using System.Reflection.Emit;
 
 namespace CarWash.Repository.Context
 {
@@ -29,7 +30,8 @@ namespace CarWash.Repository.Context
 
             builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
             base.OnModelCreating(builder);
-
+            builder.Entity<User>()
+                .HasQueryFilter(e => e.IsDeleted != true);
         }
         public override int SaveChanges()
         {

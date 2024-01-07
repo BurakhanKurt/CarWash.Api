@@ -5,6 +5,7 @@ namespace CarWash.Entity.Entities
 {
     public class WashProcess : EntityBase
     {
+        public int Id { get; set; }
         public int AppointmentId { get; set; }
         public CarWashStatus CarWashStatus { get; set; }
         public ServiceReview ServiceReview { get; set; }

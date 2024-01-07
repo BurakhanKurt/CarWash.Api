@@ -16,4 +16,8 @@
     <ProjectReference Include="..\CarWash.Repository\CarWash.Repository.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Validation\EmployeeValidation\" />
+  </ItemGroup>
+
 </Project>

@@ -1,11 +1,14 @@
-﻿namespace CarWash.Entity.Entities
+﻿using CarWash.Core.Entity;
+
+namespace CarWash.Entity.Entities
 {
-    public class Employee : User
+    public class Employee : EntityBase
     {
-        public int Id { get; set; }
+        public int UserId { get; set; }
         public int RoleId { get; set; }
         public Role Role { get; set; }
         public EmployeeAttendance EmployeeAttendance { get; set; }
-        public ICollection<EmployeeWashProcess> WashProcesses { get; set; }
+        public ICollection<EmployeeWashProcess>? WashProcesses { get; set; }
+        public User User { get; set; }
     }
 }

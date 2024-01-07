@@ -6,6 +6,8 @@ using CarWash.Entity.Dtos.Customer;
 using CarWash.Entity.Dtos.Employee;
 using CarWash.Entity.Entities;
 using CarWash.Entity.Enums;
+using CarWash.Repository.Repositories.Customers;
+using CarWash.Repository.Repositories.Employees;
 using CarWash.Repository.Repositories.Roles;
 using CarWash.Repository.Repositories.Token;
 using CarWash.Repository.Repositories.Users;
@@ -26,7 +28,10 @@ namespace CarWash.Service.Services.Auth
         private readonly IRoleRepository _roleRepository;
         private readonly ILogger<AuthService> _logger;
         private readonly ITokenRepository _tokenRepository;
-        public AuthService(JwtGenerator jwtGenerator, IUserRepository userRepository, PasswordHasher passwordHasher, IRoleRepository roleRepository, ILogger<AuthService> logger, ITokenRepository tokenRepository)
+        private readonly ICustomerRepository _customerRepository;
+        private readonly IEmployeeRepository _employeeRepository;
+        private readonly 
+        public AuthService(JwtGenerator jwtGenerator, IUserRepository userRepository, PasswordHasher passwordHasher, IRoleRepository roleRepository, ILogger<AuthService> logger, ITokenRepository tokenRepository, ICustomerRepository customerRepository, IEmployeeRepository employeeRepository)
         {
             _jwtGenerator = jwtGenerator;
             _userRepository = userRepository;
@@ -34,6 +39,8 @@ namespace CarWash.Service.Services.Auth
             _roleRepository = roleRepository;
             _logger = logger;
             _tokenRepository = tokenRepository;
+            _customerRepository = customerRepository;
+            _employeeRepository = employeeRepository;
         }
         public async Task<Response<User>> RegisterEmployee(CreateEmployeeDto createEmployeeDto)
         {
@@ -60,8 +67,17 @@ namespace CarWash.Service.Services.Auth
                 string hashedPassword = _passwordHasher.HashPassword(createEmployeeDto.Password);
 
                 // Yeni kullanıcı nesnesi oluştur
-                var newUser = ObjectMapper.Mapper.Map<Employee>(createEmployeeDto);
+                var newUser = ObjectMapper.Mapper.Map<User>(createEmployeeDto);
                 newUser.Password = hashedPassword;
+
+                var newEmpAttendance = ObjectMapper.Mapper.Map<EmployeeAttendance>(createEmployeeDto.Attandace);
+
+                var newEmployee = new Employee
+                {
+                    UserId = newUser.Id,
+                    RoleId = createEmployeeDto.RoleId,
+                    EmployeeAttendance = newEmpAttendance
+                };
 
                 // Kullanıcıyı veritabanına ekleyin
                 await _userRepository.CreateAsync(newUser);
@@ -105,8 +121,13 @@ namespace CarWash.Service.Services.Auth
                 string hashedPassword = _passwordHasher.HashPassword(createCustomerDto.Password);
 
                 // Yeni kullanıcı nesnesi oluştur
-                var newUser = ObjectMapper.Mapper.Map<Customer>(createCustomerDto);
+                var newUser = ObjectMapper.Mapper.Map<User>(createCustomerDto);
                 newUser.Password = hashedPassword;
+
+                var newEmployee = new Customer
+                {
+                    UserId = newUser.Id,
+                };
 
                 // Kullanıcıyı veritabanına ekleyin
                 await _userRepository.CreateAsync(newUser);
@@ -140,26 +161,8 @@ namespace CarWash.Service.Services.Auth
 
                 if (signInResult)
                 {
-                    var token = await _jwtGenerator.GenerateJwt(user, TokenTypes.AccessToken);
-                    var refreshToken = await _jwtGenerator.GenerateRefreshToken(user);
-
-                    var updatedToken = await _tokenRepository.FindByCondition(t => t.UserId == user.Id && t.TokenType == TokenTypes.AccessToken && t.WhosToken == WhosToken.Employee, true).FirstOrDefaultAsync();
-
-                    if (updatedToken != null)
-                    {
-                        updatedToken.Token = token;
-                        _tokenRepository.Update(updatedToken);
-                    }
-                    else
-                        await _tokenRepository.CreateAsync(new UserToken()
-                        {
-                            Token = token,
-                            TokenType = TokenTypes.AccessToken,
-                            UserId = user.Id,
-                            WhosToken = WhosToken.Customer,
-                        });
-
-                    await _tokenRepository.SaveChangesAsync();
+                    var token = await _jwtGenerator.GenerateJwt(user, UserTypes.Customer, TokenTypes.AccessToken);
+                    var refreshToken = await _jwtGenerator.GenerateRefreshToken(user, UserTypes.Customer);
 
                     return Response<LoginResDto>.Success(new LoginResDto { Token = token, RefreshToken = refreshToken }, 200);
                 }
@@ -186,8 +189,8 @@ namespace CarWash.Service.Services.Auth
 
                 if (signInResult)
                 {
-                    var token = await _jwtGenerator.GenerateJwt(user, TokenTypes.AccessToken);
-                    var refreshToken = await _jwtGenerator.GenerateRefreshToken(user);
+                    var token = await _jwtGenerator.GenerateJwt(user,UserTypes.Employee, TokenTypes.AccessToken);
+                    var refreshToken = await _jwtGenerator.GenerateRefreshToken(user, UserTypes.Employee);
 
                     return Response<LoginResDto>.Success(new LoginResDto { Token = token, RefreshToken = refreshToken }, 200);
                 }

@@ -8,6 +8,7 @@ using CarWash.Repository.Repositories.Roles;
 using CarWash.Repository.Repositories.Token;
 using CarWash.Repository.Repositories.Users;
 using CarWash.Service.ServiceExtensions;
+using Elasticsearch.Net;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -96,20 +97,23 @@ namespace CarWash.Service.Providers
             }
         }
 
-        public async Task<string> GenerateJwt(User user,TokenTypes tokenType)
+        public async Task<string> GenerateJwt(User user,UserTypes userType,TokenTypes tokenType)
         {
             string token = "";
 
             try
             {
+                var whoseToken = userType == UserTypes.Employee ? WhosToken.Employee : WhosToken.Customer;
+
                 var claims = new List<Claim>
                 {
                     new Claim(JwtRegisteredClaimNames.Sub, _jwtSettings.Subject),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                     new Claim("iat", DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString()),
                     new Claim("userid", user.Id.ToString()),
+                    new Claim("whoseToken" , whoseToken.GetStringValue())
                 };
-                if (user is Employee)
+                if (whoseToken == WhosToken.Employee)
                 {
                     var employeRole = await _employeeRepository.GetEmployeeRole(user.Id);
                     var rolelaim = new Claim("role", employeRole);
@@ -132,7 +136,7 @@ namespace CarWash.Service.Providers
                     signingCredentials: signIn);
 
                 token = new JwtSecurityTokenHandler().WriteToken(rawToken);
-                var whoseToken = user is Employee ? WhosToken.Employee : WhosToken.Customer;
+
 
                 var updatedToken = await _tokenRepository.FindByCondition(t => t.UserId == user.Id && t.TokenType == TokenTypes.AccessToken && t.WhosToken == whoseToken, true).FirstOrDefaultAsync();
 
@@ -160,11 +164,12 @@ namespace CarWash.Service.Providers
         }
         
 
-        public async Task<string> GenerateRefreshToken(User user)
+        public async Task<string> GenerateRefreshToken(User user, UserTypes userType)
         {
             string token = "";
             try
             {
+                var whoseToken = userType == UserTypes.Employee ? WhosToken.Employee : WhosToken.Customer;
                 var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Key));
                 var signIn = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
                 var userRole = await _employeeRepository.GetEmployeeRole(user.Id);
@@ -177,7 +182,7 @@ namespace CarWash.Service.Providers
                     claims: new Claim[] { new Claim("userid", user.Id.ToString()) 
                     });
                 token = new JwtSecurityTokenHandler().WriteToken(rawToken);
-                var whoseToken = user is Employee ? WhosToken.Employee : WhosToken.Customer;
+
                 var updatedToken = await _tokenRepository.FindByCondition(t => t.UserId == user.Id && t.TokenType == TokenTypes.RefreshToken && t.WhosToken == whoseToken, true).FirstOrDefaultAsync();
 
                 if (updatedToken != null)
@@ -195,7 +200,6 @@ namespace CarWash.Service.Providers
                     });
 
                 await _tokenRepository.SaveChangesAsync();
-
 
             }
             catch (Exception ex)

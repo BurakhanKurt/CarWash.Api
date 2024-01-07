@@ -2,8 +2,10 @@
 
 namespace CarWash.Entity.Entities
 {
-    public class Customer : User
+    public class Customer : EntityBase
     {
+        public int UserId { get; set; }
+        public User User { get; set; }
         public ICollection<Vehicle> Vehicles { get; set; }
     }
 }

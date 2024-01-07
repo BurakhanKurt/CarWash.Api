@@ -3,15 +3,20 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34322.80
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CarWash.Api", "CarWash.Api\CarWash.Api.csproj", "{E21A83E2-7EB7-4968-BB60-D87EC4C763D5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CarWash.Api", "CarWash.Api\CarWash.Api.csproj", "{E21A83E2-7EB7-4968-BB60-D87EC4C763D5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CarWash.Core", "CarWash.Core\CarWash.Core.csproj", "{DA2A96D8-8A84-4753-B4D1-D762BF47FC3F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CarWash.Core", "CarWash.Core\CarWash.Core.csproj", "{DA2A96D8-8A84-4753-B4D1-D762BF47FC3F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CarWash.Entity", "CarWash.Entity\CarWash.Entity.csproj", "{B8A7C5E9-6DB7-4231-9546-E97701CB7712}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CarWash.Entity", "CarWash.Entity\CarWash.Entity.csproj", "{B8A7C5E9-6DB7-4231-9546-E97701CB7712}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CarWash.Repository", "CarWash.Repository\CarWash.Repository.csproj", "{5F5AE62C-89E5-4408-8753-1CF17FEFF943}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CarWash.Repository", "CarWash.Repository\CarWash.Repository.csproj", "{5F5AE62C-89E5-4408-8753-1CF17FEFF943}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CarWash.Service", "CarWash.Service\CarWash.Service.csproj", "{1A2761E1-2F1C-4D89-8868-00580B94C9C4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CarWash.Service", "CarWash.Service\CarWash.Service.csproj", "{1A2761E1-2F1C-4D89-8868-00580B94C9C4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solition Items", "Solition Items", "{F76CE562-86BC-4511-A117-094C8F7DDB8B}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose.yaml = docker-compose.yaml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

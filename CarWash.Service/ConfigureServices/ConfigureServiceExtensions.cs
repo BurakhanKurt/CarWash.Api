@@ -1,4 +1,5 @@
 ﻿using CarWash.Repository.Repositories.Customers;
+using CarWash.Repository.Repositories.EmployeeAttendances;
 using CarWash.Repository.Repositories.Employees;
 using CarWash.Repository.Repositories.Roles;
 using CarWash.Repository.Repositories.Token;
@@ -17,6 +18,7 @@ namespace CarWash.Service.ConfigureServices
             services.AddScoped<PasswordHasher>();
             services.AddScoped<IEmployeeRepository, EmployeRepository>();
             services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IEmployeeAttendanceRepository,EmpolyeeAttendanceRepository>();
 
            
         }

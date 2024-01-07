@@ -4,6 +4,7 @@ namespace CarWash.Entity.Entities
 {
     public class Vehicle : EntityBase
     {
+        public int Id { get; set; }
         public int BrandId { get; set; }
         public int CustomerId { get; set; }
         public int Model { get; set; }

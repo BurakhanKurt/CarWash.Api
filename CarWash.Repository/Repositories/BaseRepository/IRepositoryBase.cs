@@ -30,8 +30,6 @@ namespace CarWash.Repository.Repositories.BaseRepository
 
         // Count
         Task<int> GetCountAsync();
-        Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
-        Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default);
 
     }
 }

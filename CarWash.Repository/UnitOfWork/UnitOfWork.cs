@@ -13,7 +13,7 @@ namespace CarWash.Repository.UnitOfWork
             _context = context;
         }
 
-        public async Task SaveAsync()
+        public async Task SaveChangesAsync()
         {
             await _context.SaveChangesAsync();
         }

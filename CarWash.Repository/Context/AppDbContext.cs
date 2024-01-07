@@ -33,6 +33,7 @@ namespace CarWash.Repository.Context
             builder.Entity<User>()
                 .HasQueryFilter(e => e.IsDeleted != true);
         }
+
         public override int SaveChanges()
         {
             AddTimestamps();

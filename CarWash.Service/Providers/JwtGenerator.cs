@@ -7,6 +7,7 @@ using CarWash.Repository.Repositories.Employees;
 using CarWash.Repository.Repositories.Roles;
 using CarWash.Repository.Repositories.Token;
 using CarWash.Repository.Repositories.Users;
+using CarWash.Repository.UnitOfWork;
 using CarWash.Service.ServiceExtensions;
 using Elasticsearch.Net;
 using Microsoft.EntityFrameworkCore;
@@ -29,7 +30,8 @@ namespace CarWash.Service.Providers
         private readonly IRoleRepository _roleRepository;
         private readonly IUserRepository _userRepository;
         private readonly ITokenRepository _tokenRepository;
-        public JwtGenerator(IOptions<JwtSettings> jwtSettings, ILogger<JwtGenerator> logger, ICustomerRepository customerRepository, IRoleRepository roleRepository, IEmployeeRepository employeeRepository, IUserRepository userRepository, ITokenRepository tokenRepository)
+        private readonly IUnitOfWork _unitOfWork;
+        public JwtGenerator(IOptions<JwtSettings> jwtSettings, ILogger<JwtGenerator> logger, ICustomerRepository customerRepository, IRoleRepository roleRepository, IEmployeeRepository employeeRepository, IUserRepository userRepository, ITokenRepository tokenRepository, IUnitOfWork unitOfWork)
         {
             _jwtSettings = jwtSettings.Value;
             _logger = logger;
@@ -38,6 +40,7 @@ namespace CarWash.Service.Providers
             _employeeRepository = employeeRepository;
             _userRepository = userRepository;
             _tokenRepository = tokenRepository;
+            _unitOfWork = unitOfWork;
         }
 
 
@@ -87,7 +90,7 @@ namespace CarWash.Service.Providers
 
                 // Token'ı veritabanından sil
                 _tokenRepository.Delete(expiredToken);
-                await _tokenRepository.SaveChangesAsync(); // Değişiklikleri kaydet
+                await _unitOfWork.SaveChangesAsync(); // Değişiklikleri kaydet
                 return new ValidateTokenResult(false, "Token has expired! Please login to get a new token!");
             }
             catch (Exception ex)
@@ -154,7 +157,7 @@ namespace CarWash.Service.Providers
                         WhosToken = whoseToken,
                     });
 
-                await _tokenRepository.SaveChangesAsync();
+                await _unitOfWork.SaveChangesAsync();
             }
             catch (Exception ex)
             {
@@ -199,7 +202,7 @@ namespace CarWash.Service.Providers
                         WhosToken = whoseToken,
                     });
 
-                await _tokenRepository.SaveChangesAsync();
+                await _unitOfWork.SaveChangesAsync();
 
             }
             catch (Exception ex)
@@ -236,7 +239,7 @@ namespace CarWash.Service.Providers
                 _tokenRepository.Delete(deletedAccessToken);
             if (refreshToken != null)
                 _tokenRepository.Delete(refreshToken);
-            await _tokenRepository.SaveChangesAsync();
+            await _unitOfWork.SaveChangesAsync();
         }
 
     }

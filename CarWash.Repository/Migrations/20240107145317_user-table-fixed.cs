@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace CarWash.Repository.Migrations
 {
     /// <inheritdoc />
-    public partial class init : Migration
+    public partial class usertablefixed : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -65,6 +65,30 @@ namespace CarWash.Repository.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Users",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    NormalizedUserName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    NormalizedEmail = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Users", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "WashPackages",
                 columns: table => new
                 {
@@ -84,41 +108,50 @@ namespace CarWash.Repository.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Users",
+                name: "Customers",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    NormalizedUserName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    NormalizedEmail = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Discriminator = table.Column<string>(type: "nvarchar(8)", maxLength: 8, nullable: false),
-                    RoleId1 = table.Column<int>(type: "int", nullable: true),
-                    RoleId = table.Column<int>(type: "int", nullable: true),
+                    UserId = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Users", x => x.Id);
+                    table.PrimaryKey("PK_Customers", x => x.UserId);
                     table.ForeignKey(
-                        name: "FK_Users_Roles_RoleId",
+                        name: "FK_Customers_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Employees",
+                columns: table => new
+                {
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    RoleId = table.Column<int>(type: "int", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Employees", x => x.UserId);
+                    table.ForeignKey(
+                        name: "FK_Employees_Roles_RoleId",
                         column: x => x.RoleId,
                         principalTable: "Roles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Users_Roles_RoleId1",
-                        column: x => x.RoleId1,
-                        principalTable: "Roles",
-                        principalColumn: "Id");
+                        name: "FK_Employees_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -139,42 +172,15 @@ namespace CarWash.Repository.Migrations
                 {
                     table.PrimaryKey("PK_Appointments", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Appointments_Users_CustomerId",
+                        name: "FK_Appointments_Customers_CustomerId",
                         column: x => x.CustomerId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
+                        principalTable: "Customers",
+                        principalColumn: "UserId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Appointments_WashPackages_WashPackageId",
                         column: x => x.WashPackageId,
                         principalTable: "WashPackages",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "EmployeeAttendances",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    EmployeeId = table.Column<int>(type: "int", nullable: false),
-                    OffDays = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    BreakDuration = table.Column<TimeSpan>(type: "time", nullable: false),
-                    ClockOutDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ClockInDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    HireDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_EmployeeAttendances", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_EmployeeAttendances_Users_EmployeeId",
-                        column: x => x.EmployeeId,
-                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -204,10 +210,37 @@ namespace CarWash.Repository.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Vehicles_Users_CustomerId",
+                        name: "FK_Vehicles_Customers_CustomerId",
                         column: x => x.CustomerId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
+                        principalTable: "Customers",
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "EmployeeAttendances",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    EmployeeId = table.Column<int>(type: "int", nullable: false),
+                    OffDays = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    BreakDuration = table.Column<TimeSpan>(type: "time", nullable: true),
+                    ClockOutDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ClockInDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    HireDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_EmployeeAttendances", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_EmployeeAttendances_Employees_EmployeeId",
+                        column: x => x.EmployeeId,
+                        principalTable: "Employees",
+                        principalColumn: "UserId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -269,16 +302,17 @@ namespace CarWash.Repository.Migrations
                 columns: table => new
                 {
                     EmployeeId = table.Column<int>(type: "int", nullable: false),
-                    WashProcessId = table.Column<int>(type: "int", nullable: false)
+                    WashProcessId = table.Column<int>(type: "int", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_EmployeeWashProcesses", x => new { x.EmployeeId, x.WashProcessId });
                     table.ForeignKey(
-                        name: "FK_EmployeeWashProcesses_Users_EmployeeId",
+                        name: "FK_EmployeeWashProcesses_Employees_EmployeeId",
                         column: x => x.EmployeeId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
+                        principalTable: "Employees",
+                        principalColumn: "UserId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_EmployeeWashProcesses_WashProcesses_WashProcessId",
@@ -317,9 +351,9 @@ namespace CarWash.Repository.Migrations
                 columns: new[] { "Id", "CreatedAt", "IsDeleted", "RoleName", "UpdatedAt" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2023, 12, 30, 15, 28, 1, 8, DateTimeKind.Utc).AddTicks(911), false, "SuperAdmin", new DateTime(2023, 12, 30, 15, 28, 1, 8, DateTimeKind.Utc).AddTicks(915) },
-                    { 2, new DateTime(2023, 12, 30, 15, 28, 1, 8, DateTimeKind.Utc).AddTicks(923), false, "Manager", new DateTime(2023, 12, 30, 15, 28, 1, 8, DateTimeKind.Utc).AddTicks(923) },
-                    { 3, new DateTime(2023, 12, 30, 15, 28, 1, 8, DateTimeKind.Utc).AddTicks(924), false, "Worker", new DateTime(2023, 12, 30, 15, 28, 1, 8, DateTimeKind.Utc).AddTicks(925) }
+                    { 1, new DateTime(2024, 1, 7, 14, 53, 16, 205, DateTimeKind.Utc).AddTicks(6826), false, "SuperAdmin", new DateTime(2024, 1, 7, 14, 53, 16, 205, DateTimeKind.Utc).AddTicks(6831) },
+                    { 2, new DateTime(2024, 1, 7, 14, 53, 16, 205, DateTimeKind.Utc).AddTicks(6841), false, "Manager", new DateTime(2024, 1, 7, 14, 53, 16, 205, DateTimeKind.Utc).AddTicks(6841) },
+                    { 3, new DateTime(2024, 1, 7, 14, 53, 16, 205, DateTimeKind.Utc).AddTicks(6843), false, "Worker", new DateTime(2024, 1, 7, 14, 53, 16, 205, DateTimeKind.Utc).AddTicks(6844) }
                 });
 
             migrationBuilder.CreateIndex(
@@ -339,6 +373,11 @@ namespace CarWash.Repository.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_Employees_RoleId",
+                table: "Employees",
+                column: "RoleId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_EmployeeWashProcesses_WashProcessId",
                 table: "EmployeeWashProcesses",
                 column: "WashProcessId");
@@ -354,16 +393,6 @@ namespace CarWash.Repository.Migrations
                 table: "ServiceReviews",
                 column: "WashProcessId",
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Users_RoleId",
-                table: "Users",
-                column: "RoleId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Users_RoleId1",
-                table: "Users",
-                column: "RoleId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Vehicles_BrandId",
@@ -409,22 +438,28 @@ namespace CarWash.Repository.Migrations
                 name: "Vehicles");
 
             migrationBuilder.DropTable(
+                name: "Employees");
+
+            migrationBuilder.DropTable(
                 name: "WashProcesses");
 
             migrationBuilder.DropTable(
                 name: "Brands");
 
             migrationBuilder.DropTable(
+                name: "Roles");
+
+            migrationBuilder.DropTable(
                 name: "Appointments");
 
             migrationBuilder.DropTable(
-                name: "Users");
+                name: "Customers");
 
             migrationBuilder.DropTable(
                 name: "WashPackages");
 
             migrationBuilder.DropTable(
-                name: "Roles");
+                name: "Users");
         }
     }
 }

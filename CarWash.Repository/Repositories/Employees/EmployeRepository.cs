@@ -12,7 +12,7 @@ namespace CarWash.Repository.Repositories.Employees
         }
         public async Task<string> GetEmployeeRole(int userId)
         {
-            return await FindByCondition(e => e.Id == userId, false).Select(e => e.Role.RoleName).FirstOrDefaultAsync();
+            return await FindByCondition(e => e.UserId == userId, false).Select(e => e.Role.RoleName).FirstOrDefaultAsync();
         }
     }
 }

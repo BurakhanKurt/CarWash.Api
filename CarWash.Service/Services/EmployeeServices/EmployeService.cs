@@ -3,9 +3,9 @@ using CarWash.Entity.Dtos.Employee;
 using CarWash.Entity.Entities;
 using CarWash.Repository.Repositories.EmployeeAttendances;
 using CarWash.Repository.Repositories.Employees;
+using CarWash.Repository.UnitOfWork;
 using CarWash.Service.Mapping;
 using CarWash.Service.ServiceExtensions;
-using CarWash.Service.Services.Auth;
 using Microsoft.Extensions.Logging;
 
 namespace CarWash.Service.Services.EmployeeServices
@@ -15,11 +15,13 @@ namespace CarWash.Service.Services.EmployeeServices
         private readonly ILogger<EmployeService> _logger;
         private readonly IEmployeeRepository _employeeRepository;
         private readonly IEmployeeAttendanceRepository _employeeAttendanceRepository;
-        public EmployeService(ILogger<EmployeService> logger, IEmployeeRepository employeeRepository, IEmployeeAttendanceRepository employeeAttendanceRepository)
+        private readonly IUnitOfWork _unitOfWork;
+        public EmployeService(ILogger<EmployeService> logger, IEmployeeRepository employeeRepository, IEmployeeAttendanceRepository employeeAttendanceRepository, IUnitOfWork unitOfWork)
         {
             _logger = logger;
             _employeeRepository = employeeRepository;
             _employeeAttendanceRepository = employeeAttendanceRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<Response<NoContent>> CreateEmployeeAttendance(CreateEmployeeAttandaceDto request)
@@ -27,7 +29,7 @@ namespace CarWash.Service.Services.EmployeeServices
             _logger.SendInformation(nameof(CreateEmployeeAttendance), "Started");
             try
             {
-                var isAvailable = await _employeeRepository.AnyAsync(e => e.Id == request.EmployeeId);
+                var isAvailable = await _employeeRepository.AnyAsync(e => e.UserId == request.EmployeeId);
                 if (isAvailable == false)
                 {
                     _logger.SendWarning("Employee not found",nameof(CreateEmployeeAttendance));
@@ -36,7 +38,7 @@ namespace CarWash.Service.Services.EmployeeServices
                 var empAttendance = ObjectMapper.Mapper.Map<EmployeeAttendance>(request);
 
                 await _employeeAttendanceRepository.CreateAsync(empAttendance);
-                await _employeeAttendanceRepository.SaveChangesAsync();
+                await _unitOfWork.SaveChangesAsync();
 
                 _logger.SendInformation(nameof(CreateEmployeeAttendance), "Create successful");
                 return Response<NoContent>.Success(204);

@@ -15,5 +15,7 @@ namespace CarWash.Entity.Entities
         public string? FullName => $"{FirstName} {LastName}";
         public string? PhoneNumber { get; set; }
         public string? Address { get; set; }
+        public Customer Customer { get; set; }
+        public Employee Employee { get; set; }
     }
 }

@@ -2,6 +2,7 @@
 using CarWash.Core.Settings;
 using CarWash.Repository.ConfigureRepositories;
 using CarWash.Repository.Context;
+using CarWash.Repository.UnitOfWork;
 using CarWash.Service.ConfigureServices;
 using CarWash.Service.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -59,6 +60,7 @@ builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"))
 
 builder.Services.ConfigureServices();
 builder.Services.ConfigureRepositories();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddLogging().AddSerilog();
 
 

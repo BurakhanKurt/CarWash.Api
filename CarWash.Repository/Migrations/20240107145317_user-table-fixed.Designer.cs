@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CarWash.Repository.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20231230152801_init")]
-    partial class init
+    [Migration("20240107145317_user-table-fixed")]
+    partial class usertablefixed
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -89,6 +89,49 @@ namespace CarWash.Repository.Migrations
                     b.ToTable("Brands");
                 });
 
+            modelBuilder.Entity("CarWash.Entity.Entities.Customer", b =>
+                {
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("UserId");
+
+                    b.ToTable("Customers");
+                });
+
+            modelBuilder.Entity("CarWash.Entity.Entities.Employee", b =>
+                {
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("RoleId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("UserId");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("Employees");
+                });
+
             modelBuilder.Entity("CarWash.Entity.Entities.EmployeeAttendance", b =>
                 {
                     b.Property<int>("Id")
@@ -97,7 +140,7 @@ namespace CarWash.Repository.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<TimeSpan>("BreakDuration")
+                    b.Property<TimeSpan?>("BreakDuration")
                         .HasColumnType("time");
 
                     b.Property<DateTime>("ClockInDate")
@@ -138,6 +181,9 @@ namespace CarWash.Repository.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("WashProcessId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Id")
                         .HasColumnType("int");
 
                     b.HasKey("EmployeeId", "WashProcessId");
@@ -210,26 +256,26 @@ namespace CarWash.Repository.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2023, 12, 30, 15, 28, 1, 8, DateTimeKind.Utc).AddTicks(911),
+                            CreatedAt = new DateTime(2024, 1, 7, 14, 53, 16, 205, DateTimeKind.Utc).AddTicks(6826),
                             IsDeleted = false,
                             RoleName = "SuperAdmin",
-                            UpdatedAt = new DateTime(2023, 12, 30, 15, 28, 1, 8, DateTimeKind.Utc).AddTicks(915)
+                            UpdatedAt = new DateTime(2024, 1, 7, 14, 53, 16, 205, DateTimeKind.Utc).AddTicks(6831)
                         },
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2023, 12, 30, 15, 28, 1, 8, DateTimeKind.Utc).AddTicks(923),
+                            CreatedAt = new DateTime(2024, 1, 7, 14, 53, 16, 205, DateTimeKind.Utc).AddTicks(6841),
                             IsDeleted = false,
                             RoleName = "Manager",
-                            UpdatedAt = new DateTime(2023, 12, 30, 15, 28, 1, 8, DateTimeKind.Utc).AddTicks(923)
+                            UpdatedAt = new DateTime(2024, 1, 7, 14, 53, 16, 205, DateTimeKind.Utc).AddTicks(6841)
                         },
                         new
                         {
                             Id = 3,
-                            CreatedAt = new DateTime(2023, 12, 30, 15, 28, 1, 8, DateTimeKind.Utc).AddTicks(924),
+                            CreatedAt = new DateTime(2024, 1, 7, 14, 53, 16, 205, DateTimeKind.Utc).AddTicks(6843),
                             IsDeleted = false,
                             RoleName = "Worker",
-                            UpdatedAt = new DateTime(2023, 12, 30, 15, 28, 1, 8, DateTimeKind.Utc).AddTicks(925)
+                            UpdatedAt = new DateTime(2024, 1, 7, 14, 53, 16, 205, DateTimeKind.Utc).AddTicks(6844)
                         });
                 });
 
@@ -281,11 +327,6 @@ namespace CarWash.Repository.Migrations
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Discriminator")
-                        .IsRequired()
-                        .HasMaxLength(8)
-                        .HasColumnType("nvarchar(8)");
-
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -314,9 +355,6 @@ namespace CarWash.Repository.Migrations
                     b.Property<string>("PhoneNumber")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("RoleId1")
-                        .HasColumnType("int");
-
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
@@ -326,13 +364,7 @@ namespace CarWash.Repository.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("RoleId1");
-
                     b.ToTable("Users");
-
-                    b.HasDiscriminator<string>("Discriminator").HasValue("User");
-
-                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("CarWash.Entity.Entities.UserToken", b =>
@@ -483,25 +515,6 @@ namespace CarWash.Repository.Migrations
                     b.ToTable("WashProcesses");
                 });
 
-            modelBuilder.Entity("CarWash.Entity.Entities.Customer", b =>
-                {
-                    b.HasBaseType("CarWash.Entity.Entities.User");
-
-                    b.HasDiscriminator().HasValue("Customer");
-                });
-
-            modelBuilder.Entity("CarWash.Entity.Entities.Employee", b =>
-                {
-                    b.HasBaseType("CarWash.Entity.Entities.User");
-
-                    b.Property<int>("RoleId")
-                        .HasColumnType("int");
-
-                    b.HasIndex("RoleId");
-
-                    b.HasDiscriminator().HasValue("Employee");
-                });
-
             modelBuilder.Entity("CarWash.Entity.Entities.Appointment", b =>
                 {
                     b.HasOne("CarWash.Entity.Entities.Customer", "Customer")
@@ -519,6 +532,36 @@ namespace CarWash.Repository.Migrations
                     b.Navigation("Customer");
 
                     b.Navigation("WashPackage");
+                });
+
+            modelBuilder.Entity("CarWash.Entity.Entities.Customer", b =>
+                {
+                    b.HasOne("CarWash.Entity.Entities.User", "User")
+                        .WithOne("Customer")
+                        .HasForeignKey("CarWash.Entity.Entities.Customer", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("CarWash.Entity.Entities.Employee", b =>
+                {
+                    b.HasOne("CarWash.Entity.Entities.Role", "Role")
+                        .WithMany("Users")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CarWash.Entity.Entities.User", "User")
+                        .WithOne("Employee")
+                        .HasForeignKey("CarWash.Entity.Entities.Employee", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Role");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("CarWash.Entity.Entities.EmployeeAttendance", b =>
@@ -573,13 +616,6 @@ namespace CarWash.Repository.Migrations
                     b.Navigation("WashProcess");
                 });
 
-            modelBuilder.Entity("CarWash.Entity.Entities.User", b =>
-                {
-                    b.HasOne("CarWash.Entity.Entities.Role", null)
-                        .WithMany("Users")
-                        .HasForeignKey("RoleId1");
-                });
-
             modelBuilder.Entity("CarWash.Entity.Entities.Vehicle", b =>
                 {
                     b.HasOne("CarWash.Entity.Entities.Brand", "Brand")
@@ -614,17 +650,6 @@ namespace CarWash.Repository.Migrations
                     b.Navigation("Appointment");
                 });
 
-            modelBuilder.Entity("CarWash.Entity.Entities.Employee", b =>
-                {
-                    b.HasOne("CarWash.Entity.Entities.Role", "Role")
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Role");
-                });
-
             modelBuilder.Entity("CarWash.Entity.Entities.Appointment", b =>
                 {
                     b.Navigation("Payment")
@@ -639,9 +664,31 @@ namespace CarWash.Repository.Migrations
                     b.Navigation("Vehicles");
                 });
 
+            modelBuilder.Entity("CarWash.Entity.Entities.Customer", b =>
+                {
+                    b.Navigation("Vehicles");
+                });
+
+            modelBuilder.Entity("CarWash.Entity.Entities.Employee", b =>
+                {
+                    b.Navigation("EmployeeAttendance")
+                        .IsRequired();
+
+                    b.Navigation("WashProcesses");
+                });
+
             modelBuilder.Entity("CarWash.Entity.Entities.Role", b =>
                 {
                     b.Navigation("Users");
+                });
+
+            modelBuilder.Entity("CarWash.Entity.Entities.User", b =>
+                {
+                    b.Navigation("Customer")
+                        .IsRequired();
+
+                    b.Navigation("Employee")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("CarWash.Entity.Entities.WashPackage", b =>
@@ -657,19 +704,6 @@ namespace CarWash.Repository.Migrations
 
                     b.Navigation("ServiceReview")
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("CarWash.Entity.Entities.Customer", b =>
-                {
-                    b.Navigation("Vehicles");
-                });
-
-            modelBuilder.Entity("CarWash.Entity.Entities.Employee", b =>
-                {
-                    b.Navigation("EmployeeAttendance")
-                        .IsRequired();
-
-                    b.Navigation("WashProcesses");
                 });
 #pragma warning restore 612, 618
         }

@@ -11,6 +11,7 @@ using CarWash.Repository.Repositories.Employees;
 using CarWash.Repository.Repositories.Roles;
 using CarWash.Repository.Repositories.Token;
 using CarWash.Repository.Repositories.Users;
+using CarWash.Repository.UnitOfWork;
 using CarWash.Service.Mapping;
 using CarWash.Service.Providers;
 using CarWash.Service.ServiceExtensions;
@@ -30,8 +31,8 @@ namespace CarWash.Service.Services.Auth
         private readonly ITokenRepository _tokenRepository;
         private readonly ICustomerRepository _customerRepository;
         private readonly IEmployeeRepository _employeeRepository;
-        private readonly 
-        public AuthService(JwtGenerator jwtGenerator, IUserRepository userRepository, PasswordHasher passwordHasher, IRoleRepository roleRepository, ILogger<AuthService> logger, ITokenRepository tokenRepository, ICustomerRepository customerRepository, IEmployeeRepository employeeRepository)
+        private readonly IUnitOfWork _unitOfWork;
+        public AuthService(JwtGenerator jwtGenerator, IUserRepository userRepository, PasswordHasher passwordHasher, IRoleRepository roleRepository, ILogger<AuthService> logger, ITokenRepository tokenRepository, ICustomerRepository customerRepository, IEmployeeRepository employeeRepository, IUnitOfWork unitOfWork)
         {
             _jwtGenerator = jwtGenerator;
             _userRepository = userRepository;
@@ -41,6 +42,7 @@ namespace CarWash.Service.Services.Auth
             _tokenRepository = tokenRepository;
             _customerRepository = customerRepository;
             _employeeRepository = employeeRepository;
+            _unitOfWork = unitOfWork;
         }
         public async Task<Response<User>> RegisterEmployee(CreateEmployeeDto createEmployeeDto)
         {
@@ -81,7 +83,7 @@ namespace CarWash.Service.Services.Auth
 
                 // Kullanıcıyı veritabanına ekleyin
                 await _userRepository.CreateAsync(newUser);
-                await _userRepository.SaveChangesAsync();
+                await _unitOfWork.SaveChangesAsync();
 
                 return Response<User>.Success(newUser, 200);
             }
@@ -131,7 +133,7 @@ namespace CarWash.Service.Services.Auth
 
                 // Kullanıcıyı veritabanına ekleyin
                 await _userRepository.CreateAsync(newUser);
-                await _userRepository.SaveChangesAsync();
+                await _unitOfWork.SaveChangesAsync();
 
                 return Response<User>.Success(newUser, 200);
             }

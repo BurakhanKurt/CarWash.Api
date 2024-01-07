@@ -21,7 +21,7 @@ namespace CarWash.Api.Controllers
         [HttpPost("createEmpAttendance")]
         public async Task<IActionResult> CustLogin([FromBody] CreateEmployeeAttandaceDto request)
         {
-            var response = await _employeeService.CreateEmployeeAttendance(request);
+            var response = await _employeeService.UpdateEmployeeAttendance(request);
             return CreateActionResultInstance(response);
         }
     }

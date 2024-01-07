@@ -6,6 +6,7 @@ namespace CarWash.Entity.Entities
     {
         public int UserId { get; set; }
         public User User { get; set; }
-        public ICollection<Vehicle> Vehicles { get; set; }
+        public ICollection<Vehicle>? Vehicles { get; set; }
+        public ICollection<Appointment>? Appointments { get; set; }
     }
 }

@@ -4,7 +4,7 @@ namespace CarWash.Entity.Dtos.Employee
 {
     public record CreateEmployeeAttandaceDto
     {
-        public int EmployeeId { get; init; }
+        public int UserId { get; init; }
         public List<Days>? OffDays { get; init; }
         public TimeSpan? BreakDuration { get; init; }
         public DateTime ClockOutDate { get; init; }

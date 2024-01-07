@@ -24,28 +24,30 @@ namespace CarWash.Service.Services.EmployeeServices
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<Response<NoContent>> CreateEmployeeAttendance(CreateEmployeeAttandaceDto request)
+        public async Task<Response<NoContent>> UpdateEmployeeAttendance(CreateEmployeeAttandaceDto request)
         {
-            _logger.SendInformation(nameof(CreateEmployeeAttendance), "Started");
+            _logger.SendInformation(nameof(UpdateEmployeeAttendance), "Started");
             try
             {
-                var isAvailable = await _employeeRepository.AnyAsync(e => e.UserId == request.EmployeeId);
+                var isAvailable = await _employeeRepository.AnyAsync(e => e.UserId == request.UserId);
                 if (isAvailable == false)
                 {
-                    _logger.SendWarning("Employee not found",nameof(CreateEmployeeAttendance));
+                    _logger.SendWarning("Employee not found",nameof(UpdateEmployeeAttendance));
                     return Response<NoContent>.Fail("Çalışan bulunamadı!", 400);
                 }
+
+                //var updatedAttendance = await _employeeAttendanceRepository.FindByCondition(ea=> ea.EmployeeId = );
                 var empAttendance = ObjectMapper.Mapper.Map<EmployeeAttendance>(request);
 
-                await _employeeAttendanceRepository.CreateAsync(empAttendance);
+                _employeeAttendanceRepository.Update(empAttendance);
                 await _unitOfWork.SaveChangesAsync();
 
-                _logger.SendInformation(nameof(CreateEmployeeAttendance), "Create successful");
+                _logger.SendInformation(nameof(UpdateEmployeeAttendance), "Update successful");
                 return Response<NoContent>.Success(204);
             }
             catch (Exception ex)
             {
-                _logger.SendWarning(nameof(CreateEmployeeAttendance), ex.Message);
+                _logger.SendWarning(nameof(UpdateEmployeeAttendance), ex.Message);
                 return Response<NoContent>.Fail("Bilinmedik bir hata oluştu", 500);
             }
         }

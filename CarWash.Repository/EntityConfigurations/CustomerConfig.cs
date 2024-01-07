@@ -9,13 +9,14 @@ namespace CarWash.Repository.EntityConfigurations
         public void Configure(EntityTypeBuilder<Customer> builder)
         {
             // Anahtarlar ve ilişki tanımlamaları
-            builder.HasKey(c => new { c.UserId});
-            builder.Property(c=> c.UserId).IsRequired();
+            builder.HasKey(c => new { c.UserId });
+            builder.Property(c => c.UserId).IsRequired();
 
             builder.HasOne(c => c.User)
                 .WithOne(u => u.Customer)
                 .HasForeignKey<Customer>(c => c.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
+
         }
     }
 }

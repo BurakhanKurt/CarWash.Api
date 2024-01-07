@@ -5,6 +5,6 @@ namespace CarWash.Service.Services.EmployeeServices
 {
     public interface IEmployeeService
     {
-        Task<Response<NoContent>> CreateEmployeeAttendance(CreateEmployeeAttandaceDto request);
+        Task<Response<NoContent>> UpdateEmployeeAttendance(CreateEmployeeAttandaceDto request);
     }
 }

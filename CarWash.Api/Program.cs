@@ -33,7 +33,7 @@ if (environment.Equals("Development"))
 else
 {
     builder.Configuration.AddJsonFile($"appsettings.{environment}.json", optional: false, reloadOnChange: true);
-
+    builder.Services.AddLogging().AddSerilog();
     builder.Services.AddCors(options =>
     {
         options.AddPolicy(name: MyAllowSpecificOrigins,

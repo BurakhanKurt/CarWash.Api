@@ -17,15 +17,8 @@ namespace CarWash.Service.Middleware
             var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
 
             var validateTokenResult = await jwtGenerator.ValidateToken(token);
-            if (!validateTokenResult.IsValid)
-            {
-                // Eğer token geçerli değilse, isteğe özel bir hata yanıtı dönebilirsiniz.
-                context.Response.StatusCode = 401; // Unauthorized
-                await context.Response.WriteAsync("Invalid token");
-                return;
-            }
-
-            context.Items["User"] = await _userRepository.GetByIdAsync(int.Parse(validateTokenResult.UserId));
+            if (validateTokenResult.IsValid)
+                context.Items["User"] = await _userRepository.GetByIdAsync(int.Parse(validateTokenResult.UserId));
 
             await _next(context);
         }

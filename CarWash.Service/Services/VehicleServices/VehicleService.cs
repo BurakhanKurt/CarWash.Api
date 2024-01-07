@@ -3,6 +3,7 @@ using CarWash.Entity.Dtos.VehicleDtos;
 using CarWash.Entity.Entities;
 using CarWash.Repository.Repositories.Brands;
 using CarWash.Repository.Repositories.Vehicles;
+using CarWash.Repository.UnitOfWork;
 using CarWash.Service.Mapping;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,11 +13,13 @@ public class VehicleService : IVehicleService
 {
     private readonly IVehicleRepository _vehicleRepository;
     private readonly IBrandRepository _brandRepository;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public VehicleService(IVehicleRepository vehicleRepository, IBrandRepository brandRepository)
+    public VehicleService(IVehicleRepository vehicleRepository, IBrandRepository brandRepository, IUnitOfWork unitOfWork)
     {
         _vehicleRepository = vehicleRepository;
         _brandRepository = brandRepository;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<Response<IEnumerable<VehicleListDto>>> GetAllVehicles(int id)
@@ -48,7 +51,7 @@ public class VehicleService : IVehicleService
 
         await _vehicleRepository.CreateAsync(vehicleCreate);
 
-        await _vehicleRepository.SaveChangesAsync();
+        await _unitOfWork.SaveChangesAsync();
 
         return Response<NoContent>.Success(201);
     }
@@ -66,7 +69,7 @@ public class VehicleService : IVehicleService
 
         _vehicleRepository.Update(vehicleUpdate);
 
-        await _vehicleRepository.SaveChangesAsync();
+        await _unitOfWork.SaveChangesAsync();
         
         return Response<NoContent>.Success(200);
         
@@ -82,7 +85,7 @@ public class VehicleService : IVehicleService
 
         _vehicleRepository.Delete(vehicleDelete);
 
-        await _vehicleRepository.SaveChangesAsync();
+        await _unitOfWork.SaveChangesAsync();
         
         return Response<NoContent>.Success(200);
     }

@@ -59,7 +59,7 @@ builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"))
 
 builder.Services.ConfigureServices();
 builder.Services.ConfigureRepositories();
-builder.Services.AddLogging().AddSerilog();
+//builder.Services.AddLogging().AddSerilog(); // todo kaldirilacak
 
 
 

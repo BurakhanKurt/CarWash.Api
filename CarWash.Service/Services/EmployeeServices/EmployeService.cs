@@ -6,6 +6,7 @@ using CarWash.Repository.Repositories.Employees;
 using CarWash.Repository.UnitOfWork;
 using CarWash.Service.Mapping;
 using CarWash.Service.ServiceExtensions;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace CarWash.Service.Services.EmployeeServices
@@ -29,17 +30,17 @@ namespace CarWash.Service.Services.EmployeeServices
             _logger.SendInformation(nameof(UpdateEmployeeAttendance), "Started");
             try
             {
-                var isAvailable = await _employeeRepository.AnyAsync(e => e.UserId == request.UserId);
+                var isAvailable = await _employeeRepository.AnyAsync(e => e.UserId == request.EmployeeId);
                 if (isAvailable == false)
                 {
                     _logger.SendWarning("Employee not found",nameof(UpdateEmployeeAttendance));
                     return Response<NoContent>.Fail("Çalışan bulunamadı!", 400);
                 }
 
-                //var updatedAttendance = await _employeeAttendanceRepository.FindByCondition(ea=> ea.EmployeeId = );
-                var empAttendance = ObjectMapper.Mapper.Map<EmployeeAttendance>(request);
+                var updatedAttendance = await _employeeAttendanceRepository.FindByCondition(ea=> ea.EmployeeId == request.EmployeeId).FirstOrDefaultAsync();
+                updatedAttendance = ObjectMapper.Mapper.Map(request,updatedAttendance);
 
-                _employeeAttendanceRepository.Update(empAttendance);
+                _employeeAttendanceRepository.Update(updatedAttendance);
                 await _unitOfWork.SaveChangesAsync();
 
                 _logger.SendInformation(nameof(UpdateEmployeeAttendance), "Update successful");
@@ -51,8 +52,6 @@ namespace CarWash.Service.Services.EmployeeServices
                 return Response<NoContent>.Fail("Bilinmedik bir hata oluştu", 500);
             }
         }
-
-
 
     }
 }

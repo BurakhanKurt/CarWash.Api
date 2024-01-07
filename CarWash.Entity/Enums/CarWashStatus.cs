@@ -5,6 +5,6 @@ namespace CarWash.Entity.Enums
     {
         Waiting,       
         InProcess,     
-        Completed      
+        Completed
     }
 }

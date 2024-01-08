@@ -10,8 +10,8 @@ namespace CarWash.Entity.Entities
         public Days[]? OffDays { get; set; }
         public TimeSpan? BreakDurationBegin { get; set; }
         public TimeSpan? BreakDurationEnd { get; set; }
-        public DateTime ClockOutDate { get; set; }
-        public DateTime ClockInDate { get; set; }
+        public TimeSpan ClockOutDate { get; set; }
+        public TimeSpan ClockInDate { get; set; }
         public DateTime HireDate { get; set; }
         public Employee Employee { get; set; }
     }

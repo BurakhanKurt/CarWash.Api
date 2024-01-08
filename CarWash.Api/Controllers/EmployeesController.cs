@@ -7,13 +7,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CarWash.Api.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     [ApiController]
-    public class EmployesController : CustomControllerBase
+    public class EmployeesController : CustomControllerBase
     {
         private readonly IEmployeeService _employeeService;
 
-        public EmployesController(IEmployeeService employeeService)
+        public EmployeesController(IEmployeeService employeeService)
         {
             _employeeService = employeeService;
         }
@@ -22,6 +22,14 @@ namespace CarWash.Api.Controllers
         public async Task<IActionResult> CustLogin([FromBody] CreateEmployeeAttandaceDto request)
         {
             var response = await _employeeService.UpdateEmployeeAttendance(request);
+            return CreateActionResultInstance(response);
+        }
+
+        [HttpGet("all")]
+        public async Task<IActionResult> GetAllEmployee()
+        {
+            var response = await _employeeService.GetAllEmployee();
+
             return CreateActionResultInstance(response);
         }
     }

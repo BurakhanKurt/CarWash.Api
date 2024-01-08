@@ -16,6 +16,6 @@ namespace CarWash.Entity.Dtos.Employee
         public string FullName => $"{FirstName} {LastName}";
         public string PhoneNumber { get; set; }
         public string Address { get; set; }
-        public CreateEmployeeAttandaceDto Attandace { get; set; }
+        public CreateEmployeeAttandaceDto? Attandace { get; set; }
     }
 }

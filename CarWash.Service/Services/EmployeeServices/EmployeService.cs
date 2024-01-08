@@ -53,5 +53,18 @@ namespace CarWash.Service.Services.EmployeeServices
             }
         }
 
+        public async Task<Response<IEnumerable<EmployeeListDto>>> GetAllEmployee()
+        {
+            var employees = await _employeeRepository
+                .FindAll()
+                .Include(x => x.Role)
+                .Include(x => x.User)
+                .Include(x => x.EmployeeAttendance)
+                .ToListAsync();
+
+            var employeesDto = ObjectMapper.Mapper.Map<List<EmployeeListDto>>(employees);
+            
+            return Response<IEnumerable<EmployeeListDto>>.Success(employeesDto,200);
+        }
     }
 }

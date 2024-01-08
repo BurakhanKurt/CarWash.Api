@@ -72,7 +72,7 @@ namespace CarWash.Service.Services.Auth
                 var newUser = ObjectMapper.Mapper.Map<User>(createEmployeeDto);
                 newUser.Password = hashedPassword;
 
-
+                
                 var newEmpAttendance = ObjectMapper.Mapper.Map<EmployeeAttendance>(createEmployeeDto.Attandace);
 
                 var newEmployee = new Employee
@@ -134,7 +134,10 @@ namespace CarWash.Service.Services.Auth
                 var newEmployee = new Customer
                 {
                     UserId = newUser.Id,
+                    CreatedAt = DateTime.Now,
                 };
+
+                newUser.Customer = newEmployee;
 
                 // Kullanıcıyı veritabanına ekleyin
                 await _userRepository.CreateAsync(newUser);
@@ -164,6 +167,15 @@ namespace CarWash.Service.Services.Auth
                     return Response<LoginResDto>.Fail("Girdiğiniz mail veya şifre hatalı. Lütfen kontrol ediniz", 404);
                 }
 
+                // Employee Customer logini ile login olamamasi icin sart kosuldu
+                var customer = await _customerRepository
+                    .AnyAsync(x => x.UserId == user.Id);
+
+                if (!customer)
+                {
+                    return Response<LoginResDto>.Fail("Girdiginiz bilgiler ile eslesen musteri hesabi bulunamadi", 404);
+                }
+                
                 var signInResult = _passwordHasher.VerifyPassword(request.Password, user.Password);
 
                 if (signInResult)
@@ -186,12 +198,20 @@ namespace CarWash.Service.Services.Auth
         {
             try
             {
-                var user = await _userRepository.FindByCondition(u => u.UserName == request.UserName, false).FirstOrDefaultAsync();
+                var user = await _userRepository.FindByCondition(u => u.Email == request.Email, false).FirstOrDefaultAsync();
                 if (user == null)
                 {
                     return Response<LoginResDto>.Fail("Girdiğiniz mail veya şifre hatalı. Lütfen kontrol ediniz", 404);
                 }
 
+                var employee = await _employeeRepository
+                    .AnyAsync(x => x.UserId == user.Id);
+                
+                if (!employee)
+                {
+                    return Response<LoginResDto>.Fail("Girdiginiz bilgiler ile eslesen calisan hesabi bulunamadi", 404);
+                }
+                
                 var signInResult = _passwordHasher.VerifyPassword(request.Password, user.Password);
 
                 if (signInResult)

@@ -30,6 +30,19 @@ namespace CarWash.Service.Mapping
             CreateMap<Brand, BrandDto>();
 
             #endregion
+
+            #region EmployeeListDto
+
+            CreateMap<Employee, EmployeeListDto>()
+                .ForMember(dest => dest.RoleName, opt =>
+                    opt.MapFrom(src => src.Role.RoleName))
+                .ForMember(dest => dest.HireDate, opt =>
+                    opt.MapFrom(src => src.EmployeeAttendance.HireDate))
+                .ForMember(dest => dest.FullName, opt =>
+                    opt.MapFrom(src => src.User.FullName));
+            
+            #endregion
+            
             CreateMap<CreateCustomerDto, User>()
             .ForMember(dest => dest.NormalizedEmail, opt => opt.MapFrom(src => src.Email.ToUpper()))
             .ForMember(dest => dest.NormalizedUserName, opt => opt.MapFrom(src => src.UserName.ToUpper()))

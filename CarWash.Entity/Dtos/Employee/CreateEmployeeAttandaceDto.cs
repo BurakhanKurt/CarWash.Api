@@ -6,9 +6,10 @@ namespace CarWash.Entity.Dtos.Employee
     {
         public int EmployeeId { get; init; }
         public List<Days>? OffDays { get; init; }
-        public TimeSpan? BreakDuration { get; init; }
-        public DateTime ClockOutDate { get; init; }
-        public DateTime ClockInDate { get; init; }
-        public DateTime HireDate { get; init; }
+        public TimeSpan? BreakDurationBegin { get; init; } // Mola baslangic 
+        public TimeSpan? BreakDurationEnd { get; init; } // mola bitis
+        public TimeSpan ClockOutDate { get; init; } // mesai baslangic
+        public TimeSpan ClockInDate { get; init; } // mesai bitis
+        public DateTime HireDate { get; } = DateTime.Now; 
     }
 }

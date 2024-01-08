@@ -8,6 +8,7 @@ using CarWash.Repository.Repositories.Users;
 using CarWash.Repository.Repositories.Vehicles;
 using CarWash.Service.Providers;
 using CarWash.Service.Services.Auth;
+using CarWash.Service.Services.EmployeeServices;
 using CarWash.Service.Services.VehicleServices;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -26,6 +27,7 @@ namespace CarWash.Service.ConfigureServices
             
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IVehicleService, VehicleService>();
+            services.AddScoped<IEmployeeService, EmployeService>();
 
             services.AddScoped<IEmployeeAttendanceRepository,EmpolyeeAttendanceRepository>();
 

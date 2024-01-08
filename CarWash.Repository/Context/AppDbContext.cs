@@ -32,6 +32,8 @@ namespace CarWash.Repository.Context
             base.OnModelCreating(builder);
             builder.Entity<User>()
                 .HasQueryFilter(e => e.IsDeleted != true);
+            builder.Entity<WashPackage>()
+                .HasQueryFilter(e => e.IsDeleted != true);
         }
 
         public override int SaveChanges()

@@ -23,7 +23,11 @@ namespace CarWash.Repository.EntityConfigurations
                 .HasForeignKey(a => a.PackageId)
                 .OnDelete(DeleteBehavior.Restrict); // Silme davranışını isteğinize göre ayarlayabilirsiniz
 
-            // Diğer konfigürasyonlar buraya eklenebilir.
+            // Vehicle ile iliski
+            builder.HasOne(x => x.Vehicle)
+                .WithMany(x => x.Appointments)
+                .HasForeignKey(x => x.VehicleId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

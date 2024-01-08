@@ -67,6 +67,87 @@ namespace CarWash.Service.Services.EmployeeServices
             
             return Response<IEnumerable<EmployeeListDto>>.Success(employeesDto,200);
         }
+
+        public async Task<Response<IEnumerable<EmployeeReportListDto>>> GetAllEmployeeRapor()
+        {
+
+            var employeereportListDto = await _employeeRepository
+                .FindAll()
+                .Include(x => x.Role)
+                .Where(x => x.Role.RoleName == "Worker")
+                .Include(x => x.User)
+                .Include(x => x.WashProcesses)
+                .ThenInclude(x => x.WashProcess)
+                .ThenInclude(x => x.ServiceReview)
+                .Include(x => x.WashProcesses)
+                .ThenInclude(x => x.WashProcess)
+                .ThenInclude(x => x.Appointment)
+                .ThenInclude(x => x.WashPackage)
+                .Select(x => new EmployeeReportListDto()
+                {
+                    UserId = x.UserId,
+                    FullName = x.User.FullName,
+                    WeeklyIncome = CalculateWeeklyInComing(x.WashProcesses.Select(x => x.WashProcess.Appointment)),
+                    MonthlyIncome = CalculateMonthlyInComing(x.WashProcesses.Select(x => x.WashProcess.Appointment)),
+                    TotalScore = CalculateTotalScore(x.WashProcesses.Select(x => x.WashProcess.ServiceReview))
+                }).ToListAsync();
+
+
+            return Response<IEnumerable<EmployeeReportListDto>>.Success(employeereportListDto, 200);
+        }
+
+        public async Task<Response<IEnumerable<EmployeeReportDetailListDto>>> GetAllEmployeeDetailRapor(int userId)
+        {
+            var employeeDetailReport = new List<EmployeeReportDetailListDto>();
+            
+            return Response<IEnumerable<EmployeeReportDetailListDto>>.Success(employeeDetailReport, 200);
+        }
+
+        private static float CalculateTotalScore(IEnumerable<ServiceReview> list)
+        {
+            float total = 0;
+            int count = 0;
+            foreach (var item in list)
+            {
+                total += (float)item.Rating+1.0f;
+                count++;
+            }
+
+            float avg = total / (float)count;
+
+            return avg;
+        }
+
+        private static double CalculateMonthlyInComing(IEnumerable<Appointment> list)
+        {
+            var beginDate = DateTime.Now;
+            var endDate = DateTime.Now.AddDays(-30);
+            double monthlyInComing = 0;
+            foreach (var item in list)
+            {
+                if (item.AppointmentDate.Date >= endDate.Date
+                    && item.AppointmentDate.Date <= beginDate.Date)
+                    monthlyInComing += item.WashPackage.Price;
+            }
+
+            return monthlyInComing;
+        }
+        
+        private static double CalculateWeeklyInComing(IEnumerable<Appointment> list)
+        {
+            var beginDate = DateTime.Now;
+            var endDate = DateTime.Now.AddDays(-7);
+            double weeklyInComing = 0;
+            foreach (var item in list)
+            {
+                if (item.AppointmentDate.Date >= endDate.Date
+                    && item.AppointmentDate.Date <= beginDate.Date)
+                    weeklyInComing += item.WashPackage.Price;
+            }
+
+            return weeklyInComing;
+        }
+        
         //public async Task<List<EmployeeDto>> GetAvailableWorkers(DateTime startDateTime, DateTime endDateTime)
         //{
         //    _logger.SendInformation(nameof(GetAvailableWorkers), "Started");

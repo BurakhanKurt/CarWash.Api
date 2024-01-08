@@ -8,5 +8,7 @@ namespace CarWash.Service.Services.EmployeeServices
     {
         Task<Response<NoContent>> UpdateEmployeeAttendance(CreateEmployeeAttandaceDto request);
         Task<Response<IEnumerable<EmployeeListDto>>> GetAllEmployee();
+        Task<Response<IEnumerable<EmployeeReportListDto>>> GetAllEmployeeRapor();
+        Task<Response<IEnumerable<EmployeeReportDetailListDto>>> GetAllEmployeeDetailRapor(int userId);
     }
 }

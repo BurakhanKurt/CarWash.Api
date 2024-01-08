@@ -1,6 +1,7 @@
 ﻿using CarWash.Repository.Repositories.AppointmentRepo;
 using CarWash.Repository.Repositories.Customers;
 using CarWash.Repository.Repositories.Employees;
+using CarWash.Repository.Repositories.EwpRepo;
 using CarWash.Repository.Repositories.Roles;
 using CarWash.Repository.Repositories.Token;
 using CarWash.Repository.Repositories.Users;
@@ -20,6 +21,8 @@ namespace CarWash.Repository.ConfigureRepositories
             services.AddScoped<ITokenRepository, TokenRepository>();
             services.AddScoped<IWashPackageRepository, WashPackageRepository>();
             services.AddScoped<IAppointmentRepository, AppointmentRepository>();
+            services.AddScoped<IEwbRepo,Ewbrepository>();
+
         }
     }
 }

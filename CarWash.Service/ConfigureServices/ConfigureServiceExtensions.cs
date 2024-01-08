@@ -1,12 +1,9 @@
 ﻿using CarWash.Repository.Repositories.Brands;
-using CarWash.Repository.Repositories.Customers;
 using CarWash.Repository.Repositories.EmployeeAttendances;
 using CarWash.Repository.Repositories.Employees;
-using CarWash.Repository.Repositories.Roles;
-using CarWash.Repository.Repositories.Token;
-using CarWash.Repository.Repositories.Users;
 using CarWash.Repository.Repositories.Vehicles;
 using CarWash.Service.Providers;
+using CarWash.Service.Services.AppointmentServices;
 using CarWash.Service.Services.Auth;
 using CarWash.Service.Services.EmployeeServices;
 using CarWash.Service.Services.VehicleServices;
@@ -33,8 +30,9 @@ namespace CarWash.Service.ConfigureServices
             services.AddScoped<IEmployeeAttendanceRepository,EmpolyeeAttendanceRepository>();
 
             services.AddScoped<IWashPackageService, WashPackageService>();
+            services.AddScoped<IAppointmentService, AppointmentService>();
 
-           
+
         }
     }
 }

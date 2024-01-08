@@ -1,4 +1,5 @@
-﻿using CarWash.Entity.Dtos.Customer;
+﻿using CarWash.Entity.Dtos.Appointment;
+using CarWash.Entity.Dtos.Customer;
 using CarWash.Entity.Dtos.Employee;
 using CarWash.Entity.Dtos.VehicleDtos;
 using CarWash.Entity.Dtos.WashPackage;
@@ -52,6 +53,7 @@ namespace CarWash.Service.Mapping
             CreateMap<CreateEmployeeAttandaceDto, EmployeeAttendance>();
 
             CreateMap<WashPackageDto, WashPackage>().ReverseMap();
+            CreateMap<CreateAppointmentDto,Appointment>();
         }
     }
 }

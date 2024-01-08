@@ -6,5 +6,6 @@ namespace CarWash.Repository.Repositories.Employees
     public interface IEmployeeRepository : IRepositoryBase<Employee>
     {
         Task<string> GetEmployeeRole(int userId);
+        Task<List<Employee>> GetWorkersWithAvailableTimeSlots(DateTime startDateTime, DateTime endDateTime);
     }
 }

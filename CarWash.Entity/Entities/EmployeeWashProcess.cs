@@ -3,7 +3,7 @@
 
 namespace CarWash.Entity.Entities
 {
-    public class EmployeeWashProcess
+    public class EmployeeWashProcess : EntityBase
     {
         public int Id { get; set; }
         public int EmployeeId { get; set; }

@@ -21,7 +21,7 @@ namespace CarWash.Repository.EntityConfigurations
             builder.HasOne(ewp => ewp.Employee)
                 .WithMany(e => e.WashProcesses)
                 .HasForeignKey(ewp => ewp.EmployeeId)
-                .OnDelete(DeleteBehavior.Cascade); 
+                .OnDelete(DeleteBehavior.NoAction); 
 
             // WashProcess tablosu ile ilişki
             builder.HasOne(ewp => ewp.WashProcess)

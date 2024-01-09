@@ -39,8 +39,8 @@ namespace CarWash.Service.Services.AppointmentServices
             _employeeRepository = employeeRepository;
             _workPackageRepository = workPackageRepository;
             _ewbRepo = ewbRepo;
-            _reviewRepository = reviewRepository;
         }
+
 
 
         public async Task<Response<NoContent>> CreateAppointment(CreateAppointmentDto request)
@@ -52,8 +52,7 @@ namespace CarWash.Service.Services.AppointmentServices
                 var package = await _workPackageRepository.FindByCondition(p => p.Id == request.PackageId, true)
                     .FirstOrDefaultAsync();
                 var duration = request.AppointmentDate.AddMinutes(package.Duration);
-                var availableWorkers =
-                    await _employeeRepository.GetWorkersWithAvailableTimeSlots(request.AppointmentDate, duration);
+                var availableWorkers = await _employeeRepository.GetWorkersWithAvailableTimeSlots(request.AppointmentDate, duration);
 
                 // Check employee availability
                 if (!availableWorkers.Any())
@@ -66,6 +65,7 @@ namespace CarWash.Service.Services.AppointmentServices
                 // Check for overlapping wash processes
                 foreach (var worker in availableWorkers)
                 {
+
                     var emp = await _appointmentRepository.FindAll()
                         .Include(a => a.WashProcess)
                         .ThenInclude(a => a.Employees)
@@ -78,7 +78,7 @@ namespace CarWash.Service.Services.AppointmentServices
                         .Where(a => a.UserId == worker.UserId)
                         .FirstOrDefaultAsync();
 
-
+                    
                     if (emp is null)
                     {
                         empId = worker.UserId;
@@ -105,7 +105,7 @@ namespace CarWash.Service.Services.AppointmentServices
                 var varable = new EmployeeWashProcess()
                 {
                     EmployeeId = empId,
-                    WashProcess = appointment.WashProcess
+                    WashProcess = appointment.WashProcess 
                 };
 
                 await _ewbRepo.CreateAsync(varable);
@@ -128,17 +128,17 @@ namespace CarWash.Service.Services.AppointmentServices
                 var appointmentToDelete = await _appointmentRepository.FindByCondition(a => a.Id == id, true)
                     .Include(a => a.WashProcess).FirstOrDefaultAsync();
 
-                if (appointmentToDelete == null)
+                if (appointmentToDelete == null )
                 {
                     _logger.SendWarning(nameof(DeleteAppointment), "Appointment not found");
                     return Response<NoContent>.Fail("Appointment not found", 404);
                 }
-                else if (appointmentToDelete.WashProcess.CarWashStatus != CarWashStatus.Waiting)
+                else if(appointmentToDelete.WashProcess.CarWashStatus != CarWashStatus.Waiting)
                 {
                     _logger.SendWarning(nameof(DeleteAppointment), "Randevu saati geldiği için iptal edemezsiniz");
                     return Response<NoContent>.Fail("Randevu saati geldiği için iptal edemezsiniz", 404);
                 }
-
+                
                 _appointmentRepository.Delete(appointmentToDelete);
                 await _unitOfWork.SaveChangesAsync();
 
@@ -158,31 +158,28 @@ namespace CarWash.Service.Services.AppointmentServices
             try
             {
                 var appointments = await _appointmentRepository.GetAppointmentByCustIdAsync(custId);
-
-                foreach (var appointment in appointments)
+                
+                foreach ( var appointment in appointments)
                 {
-                    if (appointment.WashProcess.CarWashStatus != CarWashStatus.Completed)
+                    if(appointment.WashProcess.CarWashStatus != CarWashStatus.Completed)
                     {
                         if (appointment.AppointmentDate.AddMinutes(appointment.WashPackage.Duration) < DateTime.Now)
                         {
                             appointment.WashProcess.CarWashStatus = CarWashStatus.Completed;
-                            appointment.Vehicle.LastWashDate =
-                                appointment.AppointmentDate.AddMinutes(appointment.WashPackage.Duration);
+                            appointment.Vehicle.LastWashDate = appointment.AppointmentDate.AddMinutes(appointment.WashPackage.Duration);
                             await _unitOfWork.SaveChangesAsync();
                         }
-                        else if (appointment.AppointmentDate <= DateTime.Now && DateTime.Now <=
-                                 appointment.AppointmentDate.AddMinutes(appointment.WashPackage.Duration))
+                        else if (appointment.AppointmentDate <= DateTime.Now && DateTime.Now <= appointment.AppointmentDate.AddMinutes(appointment.WashPackage.Duration))
                         {
                             appointment.WashProcess.CarWashStatus = CarWashStatus.InProcess;
                             await _unitOfWork.SaveChangesAsync();
                         }
                     }
                 }
-
                 var appointmentDtos = ObjectMapper.Mapper.Map<List<AppointmentListDto>>(appointments);
-
+                
                 _logger.SendInformation(nameof(GetAppointmentsByCustId), "Retrieve successful");
-                return Response<List<AppointmentListDto>>.Success(appointmentDtos, 200);
+                return Response<List<AppointmentListDto>>.Success(appointmentDtos,200);
             }
             catch (Exception ex)
             {
@@ -228,8 +225,7 @@ namespace CarWash.Service.Services.AppointmentServices
                     _logger.SendWarning(nameof(Update), "Randevu saati geldiği için düzenleme yapamazsınız");
                     return Response<NoContent>.Fail("Randevu saati geldiği için düzenleme yapamazsınız", 404);
                 }
-
-                var appointmentDtos = ObjectMapper.Mapper.Map(updatedAppointment, appointment);
+                var appointmentDtos = ObjectMapper.Mapper.Map(updatedAppointment,appointment);
 
                 _logger.SendInformation(nameof(Update), "update successful");
                 return Response<NoContent>.Success(204);
@@ -269,6 +265,42 @@ namespace CarWash.Service.Services.AppointmentServices
             {
                 _logger.SendWarning(nameof(Update), ex.Message);
                 return Response<NoContent>.Fail("Bilinmedik bir hata oluştu", 500);
+            }
+        }
+
+        public async Task<Response<List<AppointmentListDto>>> GetAll()
+        {
+            _logger.SendInformation(nameof(Update), "Started");
+            try
+            {
+                var appointments = await _appointmentRepository.GetAll();
+                foreach (var appointment in appointments)
+                {
+                    if (appointment.WashProcess.CarWashStatus != CarWashStatus.Completed)
+                    {
+                        if (appointment.AppointmentDate.AddMinutes(appointment.WashPackage.Duration) < DateTime.Now)
+                        {
+                            appointment.WashProcess.CarWashStatus = CarWashStatus.Completed;
+                            appointment.Vehicle.LastWashDate = appointment.AppointmentDate.AddMinutes(appointment.WashPackage.Duration);
+                            await _unitOfWork.SaveChangesAsync();
+                        }
+                        else if (appointment.AppointmentDate <= DateTime.Now && DateTime.Now <= appointment.AppointmentDate.AddMinutes(appointment.WashPackage.Duration))
+                        {
+                            appointment.WashProcess.CarWashStatus = CarWashStatus.InProcess;
+                            await _unitOfWork.SaveChangesAsync();
+                        }
+                    }
+                }
+                var appointmentDtos = ObjectMapper.Mapper.Map< List <AppointmentListDto>> (appointments);
+               
+
+                _logger.SendInformation(nameof(Update), "update successful");
+                return Response< List <AppointmentListDto>>.Success(appointmentDtos, 200);
+            }
+            catch (Exception ex)
+            {
+                _logger.SendWarning(nameof(Update), ex.Message);
+                return Response< List <AppointmentListDto>>.Fail("Bilinmedik bir hata oluştu", 500);
             }
         }
     }

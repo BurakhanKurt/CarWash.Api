@@ -49,5 +49,14 @@ namespace CarWash.Api.Controllers
             var response = await _appointmentService.AppointmentByScore(appointmentScoreDto);
             return CreateActionResultInstance(response);
         }
+
+        [HttpGet("all")]
+        public async Task<IActionResult> All()
+        {
+            var response = await _appointmentService.GetAll();
+            return CreateActionResultInstance(response);
+        }
+
+
     }
 }

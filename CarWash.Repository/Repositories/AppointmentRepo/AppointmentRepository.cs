@@ -38,5 +38,20 @@ namespace CarWash.Repository.Repositories.AppointmentRepo
 
             return list;
         }
+
+        public async Task<List<Appointment>> GetAll()
+        {
+            var list = await FindAll(true)
+                .Include(a => a.Vehicle)
+                .ThenInclude(a => a.Brand)
+                .Include(a => a.WashPackage)
+                .Include(a => a.WashProcess)
+                .ThenInclude(a => a.ServiceReview)
+                .Include(a => a.WashProcess).ThenInclude(a => a.Employees)
+                .OrderByDescending(a => a.WashProcess.CarWashStatus)
+                .ToListAsync();
+
+            return list;
+        }
     }
 }

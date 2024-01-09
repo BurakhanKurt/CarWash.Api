@@ -4,6 +4,7 @@ namespace CarWash.Entity.Dtos.Employee;
 
 public record EmployeeReportDetailListDto
 {
+    public int Id { get; set; }
     public string CustomerName { get; set; }
     public string PlateNumber { get; set; }
     public string PackageName { get; set; }

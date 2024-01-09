@@ -40,5 +40,13 @@ namespace CarWash.Api.Controllers
 
             return CreateActionResultInstance(response);
         }
+        
+        [HttpGet("reportDetails/{id:int}")]
+        public async Task<IActionResult> GetAllEmployeeReports([FromRoute]int id)
+        {
+            var response = await _employeeService.GetAllEmployeeDetailRapor(id);
+
+            return CreateActionResultInstance(response);
+        }
     }
 }

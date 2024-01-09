@@ -4,6 +4,7 @@ using CarWash.Entity.Entities;
 using CarWash.Entity.Enums;
 using CarWash.Repository.Repositories.EmployeeAttendances;
 using CarWash.Repository.Repositories.Employees;
+using CarWash.Repository.Repositories.ServiceReviews;
 using CarWash.Repository.UnitOfWork;
 using CarWash.Service.Mapping;
 using CarWash.Service.ServiceExtensions;
@@ -18,12 +19,18 @@ namespace CarWash.Service.Services.EmployeeServices
         private readonly IEmployeeRepository _employeeRepository;
         private readonly IEmployeeAttendanceRepository _employeeAttendanceRepository;
         private readonly IUnitOfWork _unitOfWork;
-        public EmployeService(ILogger<EmployeService> logger, IEmployeeRepository employeeRepository, IEmployeeAttendanceRepository employeeAttendanceRepository, IUnitOfWork unitOfWork)
+        private readonly IServiceReviewRepository _serviceReviewRepository;
+        public EmployeService(ILogger<EmployeService> logger,
+            IEmployeeRepository employeeRepository,
+            IEmployeeAttendanceRepository employeeAttendanceRepository,
+            IUnitOfWork unitOfWork,
+            IServiceReviewRepository serviceReviewRepository)
         {
             _logger = logger;
             _employeeRepository = employeeRepository;
             _employeeAttendanceRepository = employeeAttendanceRepository;
             _unitOfWork = unitOfWork;
+            _serviceReviewRepository = serviceReviewRepository;
         }
 
         public async Task<Response<NoContent>> UpdateEmployeeAttendance(CreateEmployeeAttandaceDto request)
@@ -38,7 +45,10 @@ namespace CarWash.Service.Services.EmployeeServices
                     return Response<NoContent>.Fail("Çalışan bulunamadı!", 400);
                 }
 
-                var updatedAttendance = await _employeeAttendanceRepository.FindByCondition(ea=> ea.EmployeeId == request.EmployeeId).FirstOrDefaultAsync();
+                var updatedAttendance = await _employeeAttendanceRepository
+                    .FindByCondition(ea=> ea.EmployeeId == request.EmployeeId)
+                    .FirstOrDefaultAsync();
+                
                 updatedAttendance = ObjectMapper.Mapper.Map(request,updatedAttendance);
 
                 _employeeAttendanceRepository.Update(updatedAttendance);
@@ -98,7 +108,29 @@ namespace CarWash.Service.Services.EmployeeServices
 
         public async Task<Response<IEnumerable<EmployeeReportDetailListDto>>> GetAllEmployeeDetailRapor(int userId)
         {
-            var employeeDetailReport = new List<EmployeeReportDetailListDto>();
+            var employeeDetailReport = await _serviceReviewRepository
+                .FindAll()
+                .Include(x => x.WashProcess)
+                .ThenInclude(x => x.WashPackage)
+                .Include(x => x.WashProcess)
+                .ThenInclude(x => x.Appointment)
+                .ThenInclude(x => x.Vehicle)
+                .Include(x => x.WashProcess)
+                .ThenInclude(x => x.Appointment)
+                .ThenInclude(x => x.Customer)
+                .ThenInclude(x => x.User)
+                .Include(x => x.WashProcess)
+                .ThenInclude(x => x.Employees.Where(e => e.EmployeeId == userId))
+                .Select(x => new EmployeeReportDetailListDto()
+                {
+                    Id = x.Id,
+                    PackageName = x.WashProcess.WashPackage.PackageName,
+                    Rating = x.Rating,
+                    Comment = x.Comment,
+                    Amount = x.WashProcess.WashPackage.Price,
+                    CustomerName = x.WashProcess.Employees.Select(x => x.Employee.User.FullName).First(),
+                    PlateNumber = x.WashProcess.Appointment.Vehicle.PlateNumber
+                }).ToListAsync();
             
             return Response<IEnumerable<EmployeeReportDetailListDto>>.Success(employeeDetailReport, 200);
         }

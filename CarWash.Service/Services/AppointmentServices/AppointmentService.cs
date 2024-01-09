@@ -138,21 +138,39 @@ namespace CarWash.Service.Services.AppointmentServices
             }
         }
 
-        public async Task<Response<List<AppointmentDto>>> GetAppointments()
+        public async Task<Response<List<AppointmentListDto>>> GetAppointmentsByCustId(int custId)
         {
-            _logger.SendInformation(nameof(GetAppointments), "Started");
+            _logger.SendInformation(nameof(GetAppointmentsByCustId), "Started");
             try
             {
-                var appointments = await _appointmentRepository.GetAllAsync();
-                var appointmentDtos = ObjectMapper.Mapper.Map<List<AppointmentDto>>(appointments);
-
-                _logger.SendInformation(nameof(GetAppointments), "Retrieve successful");
-                return Response<List<AppointmentDto>>.Success(appointmentDtos);
+                var appointments = await _appointmentRepository.GetAppointmentByCustIdAsync(custId);
+                
+                foreach ( var appointment in appointments)
+                {
+                    if(appointment.WashProcess.CarWashStatus != CarWashStatus.Completed)
+                    {
+                        if (appointment.AppointmentDate.AddMinutes(appointment.WashPackage.Duration) < DateTime.Now)
+                        {
+                            appointment.WashProcess.CarWashStatus = CarWashStatus.Completed;
+                            appointment.Vehicle.LastWashDate = appointment.AppointmentDate.AddMinutes(appointment.WashPackage.Duration);
+                            await _unitOfWork.SaveChangesAsync();
+                        }
+                        else if (appointment.AppointmentDate <= DateTime.Now && DateTime.Now <= appointment.AppointmentDate.AddMinutes(appointment.WashPackage.Duration))
+                        {
+                            appointment.WashProcess.CarWashStatus = CarWashStatus.InProcess;
+                            await _unitOfWork.SaveChangesAsync();
+                        }
+                    }
+                }
+                var appointmentDtos = ObjectMapper.Mapper.Map<List<AppointmentListDto>>(appointments);
+                
+                _logger.SendInformation(nameof(GetAppointmentsByCustId), "Retrieve successful");
+                return Response<List<AppointmentListDto>>.Success(appointmentDtos,200);
             }
             catch (Exception ex)
             {
-                _logger.SendWarning(nameof(GetAppointments), ex.Message);
-                return Response<List<AppointmentDto>>.Fail("Bilinmedik bir hata oluştu", 500);
+                _logger.SendWarning(nameof(GetAppointmentsByCustId), ex.Message);
+                return Response<List<AppointmentListDto>>.Fail("Bilinmedik bir hata oluştu", 500);
             }
         }
     }

@@ -24,5 +24,12 @@ namespace CarWash.Api.Controllers
             var response = await _appointmentService.CreateAppointment(request);
             return CreateActionResultInstance(response);
         }
+
+        [HttpGet("getByCustId")]
+        public async Task<IActionResult> GetByCustId([FromQuery] int custId)
+        {
+            var response = await _appointmentService.GetAppointmentsByCustId(custId);
+            return CreateActionResultInstance(response);
+        }
     }
 }

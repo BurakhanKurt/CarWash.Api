@@ -6,5 +6,6 @@ namespace CarWash.Service.Services.AppointmentServices
     public interface IAppointmentService
     {
         Task<Response<NoContent>> CreateAppointment(CreateAppointmentDto request);
+        Task<Response<List<AppointmentListDto>>> GetAppointmentsByCustId(int custId);
     }
 }

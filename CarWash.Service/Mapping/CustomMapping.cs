@@ -54,6 +54,10 @@ namespace CarWash.Service.Mapping
 
             CreateMap<WashPackageDto, WashPackage>().ReverseMap();
             CreateMap<CreateAppointmentDto,Appointment>();
+
+            CreateMap<Appointment, AppointmentListDto>().ForMember(dest => dest.Rating, opt => opt.MapFrom(src => src.WashProcess.ServiceReview.Rating))
+                .ForMember(dest => dest.PackageName, opt => opt.MapFrom(src => src.WashPackage.PackageName))
+                .ForMember(dest => dest.CarWashStatus, opt => opt.MapFrom(src => src.WashProcess.CarWashStatus));
         }
     }
 }

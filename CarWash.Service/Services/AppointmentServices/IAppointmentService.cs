@@ -10,5 +10,6 @@ namespace CarWash.Service.Services.AppointmentServices
         Task<Response<List<AppointmentListDto>>> GetAppointmentsByEmpId(int empId);
         Task<Response<NoContent>> DeleteAppointment(int id);
         Task<Response<NoContent>> Update(AppointmentListDto updatedAppointment);
+        Task<Response<List<AppointmentListDto>>> GetAll();
     }
 }

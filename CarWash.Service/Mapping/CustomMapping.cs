@@ -5,6 +5,7 @@ using CarWash.Entity.Dtos.UserDtos;
 using CarWash.Entity.Dtos.VehicleDtos;
 using CarWash.Entity.Dtos.WashPackage;
 using CarWash.Entity.Entities;
+using System.Collections.Generic;
 
 namespace CarWash.Service.Mapping
 {
@@ -60,6 +61,10 @@ namespace CarWash.Service.Mapping
                 .ForMember(dest => dest.PackageName, opt => opt.MapFrom(src => src.WashPackage.PackageName))
                 .ForMember(dest => dest.CarWashStatus, opt => opt.MapFrom(src => src.WashProcess.CarWashStatus));
 
+            CreateMap<Appointment, AppointmentForManagerDto>().ForMember(dest => dest.Rating, opt => opt.MapFrom(src => src.WashProcess.ServiceReview.Rating))
+                .ForMember(dest => dest.PackageName, opt => opt.MapFrom(src => src.WashPackage.PackageName))
+                .ForMember(dest => dest.CarWashStatus, opt => opt.MapFrom(src => src.WashProcess.CarWashStatus));
+          
             CreateMap<User, UserInfoDto>().ReverseMap();
         }
     }

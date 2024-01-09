@@ -14,6 +14,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Nest;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace CarWash.Service.Services.AppointmentServices
@@ -225,6 +226,42 @@ namespace CarWash.Service.Services.AppointmentServices
             {
                 _logger.SendWarning(nameof(Update), ex.Message);
                 return Response<NoContent>.Fail("Bilinmedik bir hata oluştu", 500);
+            }
+        }
+
+        public async Task<Response<List<AppointmentListDto>>> GetAll()
+        {
+            _logger.SendInformation(nameof(Update), "Started");
+            try
+            {
+                var appointments = await _appointmentRepository.GetAll();
+                foreach (var appointment in appointments)
+                {
+                    if (appointment.WashProcess.CarWashStatus != CarWashStatus.Completed)
+                    {
+                        if (appointment.AppointmentDate.AddMinutes(appointment.WashPackage.Duration) < DateTime.Now)
+                        {
+                            appointment.WashProcess.CarWashStatus = CarWashStatus.Completed;
+                            appointment.Vehicle.LastWashDate = appointment.AppointmentDate.AddMinutes(appointment.WashPackage.Duration);
+                            await _unitOfWork.SaveChangesAsync();
+                        }
+                        else if (appointment.AppointmentDate <= DateTime.Now && DateTime.Now <= appointment.AppointmentDate.AddMinutes(appointment.WashPackage.Duration))
+                        {
+                            appointment.WashProcess.CarWashStatus = CarWashStatus.InProcess;
+                            await _unitOfWork.SaveChangesAsync();
+                        }
+                    }
+                }
+                var appointmentDtos = ObjectMapper.Mapper.Map< List <AppointmentListDto>> (appointments);
+               
+
+                _logger.SendInformation(nameof(Update), "update successful");
+                return Response< List <AppointmentListDto>>.Success(appointmentDtos, 200);
+            }
+            catch (Exception ex)
+            {
+                _logger.SendWarning(nameof(Update), ex.Message);
+                return Response< List <AppointmentListDto>>.Fail("Bilinmedik bir hata oluştu", 500);
             }
         }
     }

@@ -8,5 +8,6 @@ namespace CarWash.Repository.Repositories.AppointmentRepo
     {
         Task<List<Appointment>> GetAppointmentByCustIdAsync(int custId);
         Task<List<Appointment>> GetAppointmentByEmpIdAsync(int empId);
+        Task<List<Appointment>> GetAll();
     }
 }

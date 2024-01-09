@@ -7,5 +7,8 @@ namespace CarWash.Service.Services.AppointmentServices
     {
         Task<Response<NoContent>> CreateAppointment(CreateAppointmentDto request);
         Task<Response<List<AppointmentListDto>>> GetAppointmentsByCustId(int custId);
+        Task<Response<List<AppointmentListDto>>> GetAppointmentsByEmpId(int empId);
+        Task<Response<NoContent>> DeleteAppointment(int id);
+        Task<Response<NoContent>> Update(AppointmentListDto updatedAppointment);
     }
 }

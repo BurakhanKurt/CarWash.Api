@@ -1,6 +1,7 @@
 ﻿using CarWash.Entity.Dtos.Appointment;
 using CarWash.Entity.Dtos.Customer;
 using CarWash.Entity.Dtos.Employee;
+using CarWash.Entity.Dtos.UserDtos;
 using CarWash.Entity.Dtos.VehicleDtos;
 using CarWash.Entity.Dtos.WashPackage;
 using CarWash.Entity.Entities;
@@ -58,6 +59,8 @@ namespace CarWash.Service.Mapping
             CreateMap<Appointment, AppointmentListDto>().ForMember(dest => dest.Rating, opt => opt.MapFrom(src => src.WashProcess.ServiceReview.Rating))
                 .ForMember(dest => dest.PackageName, opt => opt.MapFrom(src => src.WashPackage.PackageName))
                 .ForMember(dest => dest.CarWashStatus, opt => opt.MapFrom(src => src.WashProcess.CarWashStatus));
+
+            CreateMap<User, UserInfoDto>().ReverseMap();
         }
     }
 }

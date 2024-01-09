@@ -12,6 +12,7 @@ using CarWash.Service.ServiceExtensions;
 using CarWash.Service.Services.EmployeeServices;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Nest;
 using System;
 using System.Diagnostics;
 
@@ -52,7 +53,7 @@ namespace CarWash.Service.Services.AppointmentServices
                 if (!availableWorkers.Any())
                 {
                     _logger.SendWarning(nameof(CreateAppointment), "Employee not available at the specified time");
-                    return Response<NoContent>.Fail("Employee not available at the specified time", 400);
+                    return Response<NoContent>.Fail("Şuan bu tarih-saat için uygun randevumuz bulunmamakta", 400);
                 }
                 var empId = 0;
                 // Check for overlapping wash processes
@@ -81,7 +82,7 @@ namespace CarWash.Service.Services.AppointmentServices
                 if(empId == 0)
                 {
                     _logger.SendWarning(nameof(CreateAppointment), "Appointment overlaps with existing wash process");
-                    return Response<NoContent>.Fail("Appointment overlaps with existing wash process", 400);
+                    return Response<NoContent>.Fail("Şuan bu tarih-saat için uygun randevumuz bulunmamakta", 400);
                 }
 
                 var appointment = ObjectMapper.Mapper.Map<Appointment>(request);
@@ -117,14 +118,19 @@ namespace CarWash.Service.Services.AppointmentServices
             _logger.SendInformation(nameof(DeleteAppointment), "Started");
             try
             {
-                var appointmentToDelete = await _appointmentRepository.GetByIdAsync(id);
+                var appointmentToDelete = await _appointmentRepository.FindByCondition(a=> a.Id == id ,true).Include(a=> a.WashProcess).FirstOrDefaultAsync();
 
-                if (appointmentToDelete == null)
+                if (appointmentToDelete == null )
                 {
                     _logger.SendWarning(nameof(DeleteAppointment), "Appointment not found");
                     return Response<NoContent>.Fail("Appointment not found", 404);
                 }
-
+                else if(appointmentToDelete.WashProcess.CarWashStatus != CarWashStatus.Waiting)
+                {
+                    _logger.SendWarning(nameof(DeleteAppointment), "Randevu saati geldiği için iptal edemezsiniz");
+                    return Response<NoContent>.Fail("Randevu saati geldiği için iptal edemezsiniz", 404);
+                }
+                
                 _appointmentRepository.Delete(appointmentToDelete);
                 await _unitOfWork.SaveChangesAsync();
 
@@ -171,6 +177,54 @@ namespace CarWash.Service.Services.AppointmentServices
             {
                 _logger.SendWarning(nameof(GetAppointmentsByCustId), ex.Message);
                 return Response<List<AppointmentListDto>>.Fail("Bilinmedik bir hata oluştu", 500);
+            }
+        }
+
+        public async Task<Response<List<AppointmentListDto>>> GetAppointmentsByEmpId(int empId)
+        {
+            _logger.SendInformation(nameof(GetAppointmentsByEmpId), "Started");
+            try
+            {
+                var appointments = await _appointmentRepository.GetAppointmentByEmpIdAsync(empId);
+
+                var appointmentDtos = ObjectMapper.Mapper.Map<List<AppointmentListDto>>(appointments);
+
+                _logger.SendInformation(nameof(GetAppointmentsByEmpId), "Retrieve successful");
+                return Response<List<AppointmentListDto>>.Success(appointmentDtos, 200);
+            }
+            catch (Exception ex)
+            {
+                _logger.SendWarning(nameof(GetAppointmentsByEmpId), ex.Message);
+                return Response<List<AppointmentListDto>>.Fail("Bilinmedik bir hata oluştu", 500);
+            }
+        }
+
+        public async Task<Response<NoContent>> Update(AppointmentListDto updatedAppointment)
+        {
+            _logger.SendInformation(nameof(Update), "Started");
+            try
+            {
+                var appointment = await _appointmentRepository.FindByCondition(a => a.Id == updatedAppointment.Id, true).Include(a => a.WashProcess).FirstOrDefaultAsync();
+
+                if (appointment == null)
+                {
+                    _logger.SendWarning(nameof(Update), "Appointment not found");
+                    return Response<NoContent>.Fail("Appointment not found", 404);
+                }
+                else if (appointment.WashProcess.CarWashStatus != CarWashStatus.Waiting)
+                {
+                    _logger.SendWarning(nameof(Update), "Randevu saati geldiği için düzenleme yapamazsınız");
+                    return Response<NoContent>.Fail("Randevu saati geldiği için düzenleme yapamazsınız", 404);
+                }
+                var appointmentDtos = ObjectMapper.Mapper.Map(updatedAppointment,appointment);
+
+                _logger.SendInformation(nameof(Update), "update successful");
+                return Response<NoContent>.Success(204);
+            }
+            catch (Exception ex)
+            {
+                _logger.SendWarning(nameof(Update), ex.Message);
+                return Response<NoContent>.Fail("Bilinmedik bir hata oluştu", 500);
             }
         }
     }

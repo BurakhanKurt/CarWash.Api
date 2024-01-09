@@ -180,33 +180,5 @@ namespace CarWash.Service.Services.EmployeeServices
             return weeklyInComing;
         }
         
-        //public async Task<List<EmployeeDto>> GetAvailableWorkers(DateTime startDateTime, DateTime endDateTime)
-        //{
-        //    _logger.SendInformation(nameof(GetAvailableWorkers), "Started");
-        //    try
-        //    {
-        //        var availableWorkers = await _employeeRepository
-        //            .FindByCondition(e => e.RoleId == EmployeeRoles.Worker)
-        //            .Include(e => e.EmployeeAttendance)
-        //            .Where(e => e.EmployeeAttendance.All(ea => !IsTimeOverlap(startDateTime, endDateTime, ea.StartTime, ea.EndTime)))
-        //            .Select(e => ObjectMapper.Mapper.Map<EmployeeDto>(e))
-        //            .ToListAsync();
-
-        //        _logger.SendInformation(nameof(GetAvailableWorkers), "Retrieve successful");
-        //        return availableWorkers;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.SendWarning(nameof(GetAvailableWorkers), ex.Message);
-        //        // Handle the exception according to your application's needs
-        //        return new List<EmployeeDto>();
-        //    }
-        //}
-
-        //private bool IsTimeOverlap(DateTime start1, DateTime end1, DateTime start2, DateTime end2)
-        //{
-        //    return start1 < end2 && end1 > start2;
-        //}
-
     }
 }

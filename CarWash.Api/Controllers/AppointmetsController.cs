@@ -1,8 +1,6 @@
 ﻿using CarWash.Api.Controllers.BaseController;
 using CarWash.Entity.Dtos.Appointment;
-using CarWash.Entity.Dtos.Employee;
 using CarWash.Service.Services.AppointmentServices;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CarWash.Api.Controllers
@@ -18,7 +16,7 @@ namespace CarWash.Api.Controllers
             _appointmentService = appointmentService;
         }
 
-        [HttpPost("createEmpAttendance")]
+        [HttpPost("createAppointment")]
         public async Task<IActionResult> CustLogin([FromBody] CreateAppointmentDto request)
         {
             var response = await _appointmentService.CreateAppointment(request);
@@ -31,5 +29,26 @@ namespace CarWash.Api.Controllers
             var response = await _appointmentService.GetAppointmentsByCustId(custId);
             return CreateActionResultInstance(response);
         }
+        [HttpGet("getByEmpId")]
+        public async Task<IActionResult> GetByEmpId([FromQuery] int empId)
+        {
+            var response = await _appointmentService.GetAppointmentsByEmpId(empId);
+            return CreateActionResultInstance(response);
+        }
+
+        [HttpDelete("delete")]
+        public async Task<IActionResult> Delete([FromQuery] int appointmentId)
+        {
+            var response = await _appointmentService.DeleteAppointment(appointmentId);
+            return CreateActionResultInstance(response);
+        }
+        [HttpDelete("update")]
+        public async Task<IActionResult> Update([FromBody] AppointmentListDto appointment)
+        {
+            var response = await _appointmentService.Update(appointment);
+            return CreateActionResultInstance(response);
+        }
+
+
     }
 }

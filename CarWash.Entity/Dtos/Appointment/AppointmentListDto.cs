@@ -5,6 +5,7 @@ namespace CarWash.Entity.Dtos.Appointment
 {
     public record AppointmentListDto
     {
+        public int Id { get; set; }
         public VehicleListDto Vehicle { get; set; }
         public string PackageName { get; set; }
         public DateTime AppointmentDate { get; init; }

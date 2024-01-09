@@ -27,13 +27,16 @@ namespace CarWash.Repository.Context
         public DbSet<UserToken> Tokens { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
-
             builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
             base.OnModelCreating(builder);
             builder.Entity<User>()
                 .HasQueryFilter(e => e.IsDeleted != true);
             builder.Entity<WashPackage>()
                 .HasQueryFilter(e => e.IsDeleted != true);
+            builder.Entity<Appointment>()
+                .HasQueryFilter(a => a.IsDeleted != true);
+            builder.Entity<WashProcess>()
+                .HasQueryFilter(a => a.IsDeleted != true);
         }
 
         public override int SaveChanges()

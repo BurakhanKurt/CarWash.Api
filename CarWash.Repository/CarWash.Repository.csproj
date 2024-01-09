@@ -23,4 +23,8 @@
     <ProjectReference Include="..\CarWash.Entity\CarWash.Entity.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="Migrations\AppDbContextModelSnapshot.cs" />
+  </ItemGroup>
+
 </Project>

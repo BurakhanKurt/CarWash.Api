@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CarWash.Api.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     [ApiController]
     public class AppointmetsController : CustomControllerBase
     {
@@ -42,13 +42,12 @@ namespace CarWash.Api.Controllers
             var response = await _appointmentService.DeleteAppointment(appointmentId);
             return CreateActionResultInstance(response);
         }
-        [HttpDelete("update")]
-        public async Task<IActionResult> Update([FromBody] AppointmentListDto appointment)
+
+        [HttpPost("createReview")]
+        public async Task<IActionResult> CreateReviewByScore([FromBody] AppointmentScoreDto appointmentScoreDto)
         {
-            var response = await _appointmentService.Update(appointment);
+            var response = await _appointmentService.AppointmentByScore(appointmentScoreDto);
             return CreateActionResultInstance(response);
         }
-
-
     }
 }

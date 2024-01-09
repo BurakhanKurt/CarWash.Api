@@ -141,7 +141,7 @@ namespace CarWash.Service.Services.EmployeeServices
             int count = 0;
             foreach (var item in list)
             {
-                total += (float)item.Rating+1.0f;
+                total += (float)item.Rating;
                 count++;
             }
 

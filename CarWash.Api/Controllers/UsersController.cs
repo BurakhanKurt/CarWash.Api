@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CarWash.Api.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     [ApiController]
     public class UsersController : CustomControllerBase
     {
@@ -16,7 +16,7 @@ namespace CarWash.Api.Controllers
             _userService = userService;
         }
 
-        [HttpGet("info")]
+        [HttpPost("info")]
         public async Task<IActionResult> UserInfo()
         {
             var response = await _userService.GetUserInfo(int.Parse(GetUserId()));

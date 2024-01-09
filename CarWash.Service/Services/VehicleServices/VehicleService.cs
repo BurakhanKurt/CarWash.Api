@@ -31,6 +31,15 @@ public class VehicleService : IVehicleService
         return Response<IEnumerable<VehicleListDto>>.Success(vehiclesDto, 200);
     }
 
+    public async Task<Response<IEnumerable<VehicleListForAppointmentDto>>> GetAllVehiclesForAppointment(int id)
+    {
+        var vehicles = await _vehicleRepository.GetAllVehicles(id);
+        
+        var vehiclesDto = ObjectMapper.Mapper.Map<List<VehicleListForAppointmentDto>>(vehicles);
+        
+        return Response<IEnumerable<VehicleListForAppointmentDto>>.Success(vehiclesDto, 200);
+    }
+
     public async Task<Response<IEnumerable<BrandDto>>> GetAllBrands()
     {
         var brands = await _brandRepository

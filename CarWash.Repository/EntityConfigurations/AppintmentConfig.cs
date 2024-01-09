@@ -21,12 +21,17 @@ namespace CarWash.Repository.EntityConfigurations
             builder.HasOne(a => a.WashPackage)
                 .WithMany(c=> c.Appointments)
                 .HasForeignKey(a => a.PackageId)
-                .OnDelete(DeleteBehavior.Restrict); // Silme davranışını isteğinize göre ayarlayabilirsiniz
+                .OnDelete(DeleteBehavior.Cascade); // Silme davranışını isteğinize göre ayarlayabilirsiniz
 
             // Vehicle ile iliski
             builder.HasOne(x => x.Vehicle)
                 .WithMany(x => x.Appointments)
                 .HasForeignKey(x => x.VehicleId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasOne(x => x.WashProcess)
+                .WithOne(x => x.Appointment)
+                .HasForeignKey<WashProcess>(x => x.AppointmentId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }

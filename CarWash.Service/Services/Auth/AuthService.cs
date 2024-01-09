@@ -71,7 +71,6 @@ namespace CarWash.Service.Services.Auth
                 // Yeni kullanıcı nesnesi oluştur
                 var newUser = ObjectMapper.Mapper.Map<User>(createEmployeeDto);
                 newUser.Password = hashedPassword;
-
                 
                 var newEmpAttendance = ObjectMapper.Mapper.Map<EmployeeAttendance>(createEmployeeDto.Attandace);
 
@@ -79,7 +78,7 @@ namespace CarWash.Service.Services.Auth
                 {
                     //UserId = newUser.Id,
                     RoleId = createEmployeeDto.RoleId,
-                    EmployeeAttendance = newEmpAttendance
+                    EmployeeAttendance = newEmpAttendance,
                 };
 
                 newUser.Employee = newEmployee;

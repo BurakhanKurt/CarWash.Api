@@ -24,6 +24,15 @@ public class VehicleController : CustomControllerBase
 
         return CreateActionResultInstance(vehicles);
     }
+    
+    [HttpGet("allForAppoint/{id:int}")]
+    public async Task<IActionResult> GetAllVehicleForAppointment([FromRoute(Name = "id")] int id)
+    {
+        var vehicles = await _service
+            .GetAllVehiclesForAppointment(id);
+
+        return CreateActionResultInstance(vehicles);
+    }
 
     [HttpGet("all/brands")]
     public async Task<IActionResult> GetAllBrands()

@@ -9,6 +9,7 @@ namespace CarWash.Service.Services.WashPackageServices
         Task<Response<NoContent>> UpdateWashPackage(WashPackageDto request);
         Task<Response<NoContent>> DeleteWashPackage(int id);
         Task<Response<List<WashPackageDto>>> GetWashPackages();
+        Task<Response<List<WashPackageForCustDto>>> GetAllPackageForCustomer();
 
     }
 }

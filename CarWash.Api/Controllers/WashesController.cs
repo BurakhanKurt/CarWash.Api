@@ -46,5 +46,12 @@ namespace CarWash.Api.Controllers
             var response = await _washPackageService.GetWashPackages();
             return CreateActionResultInstance(response);
         }
+        
+        [HttpGet("allForCustomer")]
+        public async Task<IActionResult> GetAllPackageForCustomer()
+        {
+            var response = await _washPackageService.GetAllPackageForCustomer();
+            return CreateActionResultInstance(response);
+        }
     }
 }

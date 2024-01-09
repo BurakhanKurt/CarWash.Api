@@ -3,10 +3,10 @@ namespace CarWash.Entity.Enums
 {
     public enum Rating
     {
-        TooBad,
-        Bad,
-        Middle,
-        Good,
-        VeryGood
+        TooBad = 1,
+        Bad = 2,
+        Middle = 3,
+        Good = 4,
+        VeryGood = 5
     }
 }

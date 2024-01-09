@@ -21,13 +21,13 @@ namespace CarWash.Repository.EntityConfigurations
             builder.HasOne(ewp => ewp.Employee)
                 .WithMany(e => e.WashProcesses)
                 .HasForeignKey(ewp => ewp.EmployeeId)
-                .OnDelete(DeleteBehavior.Restrict); 
+                .OnDelete(DeleteBehavior.Cascade); 
 
             // WashProcess tablosu ile ilişki
             builder.HasOne(ewp => ewp.WashProcess)
                 .WithMany(wp => wp.Employees)
                 .HasForeignKey(ewp => ewp.WashProcessId)
-                .OnDelete(DeleteBehavior.Restrict); 
+                .OnDelete(DeleteBehavior.Cascade); 
         }
     }
 }

@@ -116,5 +116,23 @@ namespace CarWash.Service.Services.WashPackageServices
                 return Response <List<WashPackageDto>>.Fail("Bilinmedik bir hata oluştu", 500);
             }
         }
+
+        public async Task<Response<List<WashPackageForCustDto>>> GetAllPackageForCustomer()
+        {
+            _logger.SendInformation(nameof(GetWashPackages), "Started");
+            try
+            {
+                var packages = await _washPackageRepository.FindAll().ToListAsync();
+                var packageDtos = ObjectMapper.Mapper.Map<List<WashPackageForCustDto>>(packages);
+
+                _logger.SendInformation(nameof(GetWashPackages), "Retrieve successful");
+                return Response<List<WashPackageForCustDto>>.Success(packageDtos,200);
+            }
+            catch (Exception ex)
+            {
+                _logger.SendError(ex, nameof(GetWashPackages));
+                return Response <List<WashPackageForCustDto>>.Fail("Bilinmedik bir hata oluştu", 500);
+            }
+        }
     }
 }

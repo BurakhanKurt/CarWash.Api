@@ -145,7 +145,9 @@ namespace CarWash.Service.Services.EmployeeServices
                 count++;
             }
 
-            float avg = total / (float)count;
+            float avg = total;
+            if(count != 0)
+                avg = total / (float)count;
 
             return avg;
         }
